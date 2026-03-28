@@ -1,4 +1,4 @@
-# FinQueryGym
+# FinQuery
 
 > An OpenEnv-compatible RL environment simulating a financial data terminal for training agents on multi-step analytical reasoning.
 
