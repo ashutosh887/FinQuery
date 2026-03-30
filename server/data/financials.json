@@ -1,0 +1,1302 @@
+{
+  "AAPL": {
+    "2020": {
+      "income_statement": {
+        "revenue": 274515,
+        "cogs": 169559,
+        "gross_profit": 104956,
+        "operating_income": 66288,
+        "net_income": 57411,
+        "eps": 3.28
+      },
+      "balance_sheet": {
+        "total_assets": 323888,
+        "total_liabilities": 258549,
+        "total_equity": 65339,
+        "cash": 38016,
+        "total_debt": 112436
+      },
+      "cash_flow": {
+        "operating_cf": 80674,
+        "investing_cf": -45977,
+        "financing_cf": -86820,
+        "fcf": 73365,
+        "capex": 7309
+      },
+      "price": {
+        "open": 75.15,
+        "close": 132.69,
+        "high": 138.79,
+        "low": 53.15,
+        "avg_price": 95.97
+      },
+      "shares_outstanding": 17001
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 365817,
+        "cogs": 212981,
+        "gross_profit": 152836,
+        "operating_income": 108949,
+        "net_income": 94680,
+        "eps": 5.61
+      },
+      "balance_sheet": {
+        "total_assets": 351002,
+        "total_liabilities": 287912,
+        "total_equity": 63090,
+        "cash": 34940,
+        "total_debt": 124719
+      },
+      "cash_flow": {
+        "operating_cf": 104038,
+        "investing_cf": -14545,
+        "financing_cf": -93353,
+        "fcf": 92953,
+        "capex": 11085
+      },
+      "price": {
+        "open": 133.52,
+        "close": 177.57,
+        "high": 182.94,
+        "low": 116.21,
+        "avg_price": 149.58
+      },
+      "shares_outstanding": 16865
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 394328,
+        "cogs": 223546,
+        "gross_profit": 170782,
+        "operating_income": 119437,
+        "net_income": 99803,
+        "eps": 6.11
+      },
+      "balance_sheet": {
+        "total_assets": 352583,
+        "total_liabilities": 302083,
+        "total_equity": 50500,
+        "cash": 23646,
+        "total_debt": 120069
+      },
+      "cash_flow": {
+        "operating_cf": 122151,
+        "investing_cf": -22354,
+        "financing_cf": -110749,
+        "fcf": 111443,
+        "capex": 10708
+      },
+      "price": {
+        "open": 177.83,
+        "close": 129.93,
+        "high": 182.01,
+        "low": 124.17,
+        "avg_price": 150.09
+      },
+      "shares_outstanding": 16326
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 383285,
+        "cogs": 214137,
+        "gross_profit": 169148,
+        "operating_income": 114301,
+        "net_income": 96995,
+        "eps": 6.13
+      },
+      "balance_sheet": {
+        "total_assets": 352583,
+        "total_liabilities": 290437,
+        "total_equity": 62146,
+        "cash": 29965,
+        "total_debt": 111088
+      },
+      "cash_flow": {
+        "operating_cf": 110543,
+        "investing_cf": -3685,
+        "financing_cf": -108488,
+        "fcf": 99584,
+        "capex": 10959
+      },
+      "price": {
+        "open": 130.28,
+        "close": 192.53,
+        "high": 199.62,
+        "low": 124.17,
+        "avg_price": 161.40
+      },
+      "shares_outstanding": 15813
+    }
+  },
+  "MSFT": {
+    "2020": {
+      "income_statement": {
+        "revenue": 143015,
+        "cogs": 46078,
+        "gross_profit": 96937,
+        "operating_income": 52959,
+        "net_income": 44281,
+        "eps": 5.76
+      },
+      "balance_sheet": {
+        "total_assets": 301311,
+        "total_liabilities": 183007,
+        "total_equity": 118304,
+        "cash": 13576,
+        "total_debt": 63325
+      },
+      "cash_flow": {
+        "operating_cf": 60675,
+        "investing_cf": -12223,
+        "financing_cf": -46031,
+        "fcf": 45234,
+        "capex": 15441
+      },
+      "price": {
+        "open": 158.78,
+        "close": 222.42,
+        "high": 232.86,
+        "low": 132.52,
+        "avg_price": 182.69
+      },
+      "shares_outstanding": 7571
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 168088,
+        "cogs": 52232,
+        "gross_profit": 115856,
+        "operating_income": 69916,
+        "net_income": 61271,
+        "eps": 8.05
+      },
+      "balance_sheet": {
+        "total_assets": 333779,
+        "total_liabilities": 191791,
+        "total_equity": 141988,
+        "cash": 14224,
+        "total_debt": 67775
+      },
+      "cash_flow": {
+        "operating_cf": 76740,
+        "investing_cf": -27577,
+        "financing_cf": -48486,
+        "fcf": 56118,
+        "capex": 20622
+      },
+      "price": {
+        "open": 222.53,
+        "close": 336.32,
+        "high": 349.67,
+        "low": 211.94,
+        "avg_price": 280.81
+      },
+      "shares_outstanding": 7547
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 198270,
+        "cogs": 62650,
+        "gross_profit": 135620,
+        "operating_income": 83383,
+        "net_income": 72738,
+        "eps": 9.65
+      },
+      "balance_sheet": {
+        "total_assets": 364840,
+        "total_liabilities": 198298,
+        "total_equity": 166542,
+        "cash": 13931,
+        "total_debt": 61270
+      },
+      "cash_flow": {
+        "operating_cf": 89035,
+        "investing_cf": -30311,
+        "financing_cf": -58876,
+        "fcf": 63328,
+        "capex": 25707
+      },
+      "price": {
+        "open": 336.63,
+        "close": 239.82,
+        "high": 349.67,
+        "low": 213.43,
+        "avg_price": 276.55
+      },
+      "shares_outstanding": 7496
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 211915,
+        "cogs": 65863,
+        "gross_profit": 146052,
+        "operating_income": 88523,
+        "net_income": 72361,
+        "eps": 9.68
+      },
+      "balance_sheet": {
+        "total_assets": 411976,
+        "total_liabilities": 205753,
+        "total_equity": 206223,
+        "cash": 34704,
+        "total_debt": 59965
+      },
+      "cash_flow": {
+        "operating_cf": 87582,
+        "investing_cf": -42272,
+        "financing_cf": -44789,
+        "fcf": 59475,
+        "capex": 28107
+      },
+      "price": {
+        "open": 243.08,
+        "close": 376.04,
+        "high": 384.30,
+        "low": 219.35,
+        "avg_price": 309.69
+      },
+      "shares_outstanding": 7432
+    }
+  },
+  "GOOGL": {
+    "2020": {
+      "income_statement": {
+        "revenue": 182527,
+        "cogs": 84732,
+        "gross_profit": 97795,
+        "operating_income": 41224,
+        "net_income": 40269,
+        "eps": 2.93
+      },
+      "balance_sheet": {
+        "total_assets": 319616,
+        "total_liabilities": 97072,
+        "total_equity": 222544,
+        "cash": 26465,
+        "total_debt": 26772
+      },
+      "cash_flow": {
+        "operating_cf": 65124,
+        "investing_cf": -32773,
+        "financing_cf": -24408,
+        "fcf": 42843,
+        "capex": 22281
+      },
+      "price": {
+        "open": 67.42,
+        "close": 87.58,
+        "high": 91.45,
+        "low": 50.44,
+        "avg_price": 71.01
+      },
+      "shares_outstanding": 13504
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 257637,
+        "cogs": 110939,
+        "gross_profit": 146698,
+        "operating_income": 78714,
+        "net_income": 76033,
+        "eps": 5.61
+      },
+      "balance_sheet": {
+        "total_assets": 359268,
+        "total_liabilities": 107633,
+        "total_equity": 251635,
+        "cash": 20945,
+        "total_debt": 26206
+      },
+      "cash_flow": {
+        "operating_cf": 91652,
+        "investing_cf": -35523,
+        "financing_cf": -51103,
+        "fcf": 67012,
+        "capex": 24640
+      },
+      "price": {
+        "open": 86.83,
+        "close": 144.68,
+        "high": 151.55,
+        "low": 83.41,
+        "avg_price": 117.49
+      },
+      "shares_outstanding": 13242
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 282836,
+        "cogs": 126203,
+        "gross_profit": 156633,
+        "operating_income": 74842,
+        "net_income": 59972,
+        "eps": 4.56
+      },
+      "balance_sheet": {
+        "total_assets": 365264,
+        "total_liabilities": 109120,
+        "total_equity": 256144,
+        "cash": 21879,
+        "total_debt": 26507
+      },
+      "cash_flow": {
+        "operating_cf": 91495,
+        "investing_cf": -31485,
+        "financing_cf": -61362,
+        "fcf": 60010,
+        "capex": 31485
+      },
+      "price": {
+        "open": 144.41,
+        "close": 88.73,
+        "high": 151.55,
+        "low": 83.34,
+        "avg_price": 111.45
+      },
+      "shares_outstanding": 13044
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 307394,
+        "cogs": 133332,
+        "gross_profit": 174062,
+        "operating_income": 84293,
+        "net_income": 73795,
+        "eps": 5.80
+      },
+      "balance_sheet": {
+        "total_assets": 402392,
+        "total_liabilities": 119013,
+        "total_equity": 283379,
+        "cash": 30691,
+        "total_debt": 28502
+      },
+      "cash_flow": {
+        "operating_cf": 101746,
+        "investing_cf": -32274,
+        "financing_cf": -69757,
+        "fcf": 69495,
+        "capex": 32251
+      },
+      "price": {
+        "open": 89.70,
+        "close": 140.93,
+        "high": 143.38,
+        "low": 83.45,
+        "avg_price": 115.04
+      },
+      "shares_outstanding": 12723
+    }
+  },
+  "META": {
+    "2020": {
+      "income_statement": {
+        "revenue": 85965,
+        "cogs": 16692,
+        "gross_profit": 69273,
+        "operating_income": 32671,
+        "net_income": 29146,
+        "eps": 10.09
+      },
+      "balance_sheet": {
+        "total_assets": 159316,
+        "total_liabilities": 31026,
+        "total_equity": 128290,
+        "cash": 17576,
+        "total_debt": 10654
+      },
+      "cash_flow": {
+        "operating_cf": 38747,
+        "investing_cf": -30059,
+        "financing_cf": -8710,
+        "fcf": 23632,
+        "capex": 15115
+      },
+      "price": {
+        "open": 206.75,
+        "close": 273.16,
+        "high": 304.67,
+        "low": 137.10,
+        "avg_price": 220.89
+      },
+      "shares_outstanding": 2850
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 117929,
+        "cogs": 22649,
+        "gross_profit": 95280,
+        "operating_income": 46753,
+        "net_income": 39370,
+        "eps": 13.77
+      },
+      "balance_sheet": {
+        "total_assets": 165987,
+        "total_liabilities": 39218,
+        "total_equity": 126769,
+        "cash": 16601,
+        "total_debt": 12918
+      },
+      "cash_flow": {
+        "operating_cf": 57683,
+        "investing_cf": -27956,
+        "financing_cf": -34105,
+        "fcf": 39116,
+        "capex": 18567
+      },
+      "price": {
+        "open": 268.94,
+        "close": 335.37,
+        "high": 384.33,
+        "low": 245.64,
+        "avg_price": 314.99
+      },
+      "shares_outstanding": 2772
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 116609,
+        "cogs": 25249,
+        "gross_profit": 91360,
+        "operating_income": 28944,
+        "net_income": 23200,
+        "eps": 8.59
+      },
+      "balance_sheet": {
+        "total_assets": 165987,
+        "total_liabilities": 52553,
+        "total_equity": 113434,
+        "cash": 14681,
+        "total_debt": 19867
+      },
+      "cash_flow": {
+        "operating_cf": 50475,
+        "investing_cf": -31431,
+        "financing_cf": -22213,
+        "fcf": 18934,
+        "capex": 31541
+      },
+      "price": {
+        "open": 338.23,
+        "close": 120.34,
+        "high": 351.70,
+        "low": 88.09,
+        "avg_price": 175.90
+      },
+      "shares_outstanding": 2687
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 134902,
+        "cogs": 25290,
+        "gross_profit": 109612,
+        "operating_income": 46751,
+        "net_income": 39098,
+        "eps": 14.87
+      },
+      "balance_sheet": {
+        "total_assets": 197099,
+        "total_liabilities": 62444,
+        "total_equity": 134655,
+        "cash": 41862,
+        "total_debt": 28828
+      },
+      "cash_flow": {
+        "operating_cf": 71113,
+        "investing_cf": -28306,
+        "financing_cf": -36503,
+        "fcf": 43861,
+        "capex": 27252
+      },
+      "price": {
+        "open": 124.74,
+        "close": 353.96,
+        "high": 361.90,
+        "low": 117.28,
+        "avg_price": 239.32
+      },
+      "shares_outstanding": 2560
+    }
+  },
+  "AMZN": {
+    "2020": {
+      "income_statement": {
+        "revenue": 386064,
+        "cogs": 233307,
+        "gross_profit": 152757,
+        "operating_income": 22899,
+        "net_income": 21331,
+        "eps": 2.09
+      },
+      "balance_sheet": {
+        "total_assets": 321195,
+        "total_liabilities": 227791,
+        "total_equity": 93404,
+        "cash": 42122,
+        "total_debt": 84389
+      },
+      "cash_flow": {
+        "operating_cf": 66064,
+        "investing_cf": -40140,
+        "financing_cf": -1042,
+        "fcf": 25924,
+        "capex": 40140
+      },
+      "price": {
+        "open": 93.75,
+        "close": 162.85,
+        "high": 170.48,
+        "low": 81.30,
+        "avg_price": 127.08
+      },
+      "shares_outstanding": 10073
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 469822,
+        "cogs": 272344,
+        "gross_profit": 197478,
+        "operating_income": 24879,
+        "net_income": 33364,
+        "eps": 3.24
+      },
+      "balance_sheet": {
+        "total_assets": 420549,
+        "total_liabilities": 282304,
+        "total_equity": 138245,
+        "cash": 36220,
+        "total_debt": 116395
+      },
+      "cash_flow": {
+        "operating_cf": 46327,
+        "investing_cf": -58154,
+        "financing_cf": 6291,
+        "fcf": -14427,
+        "capex": 60754
+      },
+      "price": {
+        "open": 163.52,
+        "close": 166.72,
+        "high": 188.65,
+        "low": 148.97,
+        "avg_price": 168.81
+      },
+      "shares_outstanding": 10117
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 513983,
+        "cogs": 288831,
+        "gross_profit": 225152,
+        "operating_income": 12248,
+        "net_income": -2722,
+        "eps": -0.27
+      },
+      "balance_sheet": {
+        "total_assets": 462675,
+        "total_liabilities": 316632,
+        "total_equity": 146043,
+        "cash": 53888,
+        "total_debt": 140975
+      },
+      "cash_flow": {
+        "operating_cf": 46752,
+        "investing_cf": -37601,
+        "financing_cf": 9718,
+        "fcf": -16526,
+        "capex": 63278
+      },
+      "price": {
+        "open": 170.40,
+        "close": 84.00,
+        "high": 188.11,
+        "low": 81.43,
+        "avg_price": 128.77
+      },
+      "shares_outstanding": 10189
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 574785,
+        "cogs": 304739,
+        "gross_profit": 270046,
+        "operating_income": 36852,
+        "net_income": 30425,
+        "eps": 2.90
+      },
+      "balance_sheet": {
+        "total_assets": 527854,
+        "total_liabilities": 350136,
+        "total_equity": 177718,
+        "cash": 73387,
+        "total_debt": 136987
+      },
+      "cash_flow": {
+        "operating_cf": 84946,
+        "investing_cf": -49833,
+        "financing_cf": -15879,
+        "fcf": 32164,
+        "capex": 52782
+      },
+      "price": {
+        "open": 85.46,
+        "close": 152.37,
+        "high": 155.63,
+        "low": 81.43,
+        "avg_price": 118.53
+      },
+      "shares_outstanding": 10304
+    }
+  },
+  "NVDA": {
+    "2020": {
+      "income_statement": {
+        "revenue": 16675,
+        "cogs": 6279,
+        "gross_profit": 10396,
+        "operating_income": 4532,
+        "net_income": 4332,
+        "eps": 1.73
+      },
+      "balance_sheet": {
+        "total_assets": 28791,
+        "total_liabilities": 13199,
+        "total_equity": 15592,
+        "cash": 847,
+        "total_debt": 7597
+      },
+      "cash_flow": {
+        "operating_cf": 5822,
+        "investing_cf": -8755,
+        "financing_cf": 3804,
+        "fcf": 5413,
+        "capex": 409
+      },
+      "price": {
+        "open": 59.23,
+        "close": 130.97,
+        "high": 146.08,
+        "low": 45.16,
+        "avg_price": 93.62
+      },
+      "shares_outstanding": 2480
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 26914,
+        "cogs": 9439,
+        "gross_profit": 17475,
+        "operating_income": 10041,
+        "net_income": 9752,
+        "eps": 3.91
+      },
+      "balance_sheet": {
+        "total_assets": 44187,
+        "total_liabilities": 22750,
+        "total_equity": 21437,
+        "cash": 1290,
+        "total_debt": 12093
+      },
+      "cash_flow": {
+        "operating_cf": 9108,
+        "investing_cf": -9830,
+        "financing_cf": 1865,
+        "fcf": 8132,
+        "capex": 976
+      },
+      "price": {
+        "open": 131.03,
+        "close": 294.11,
+        "high": 346.47,
+        "low": 115.67,
+        "avg_price": 223.57
+      },
+      "shares_outstanding": 2490
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 26974,
+        "cogs": 11618,
+        "gross_profit": 15356,
+        "operating_income": 4224,
+        "net_income": 4368,
+        "eps": 1.74
+      },
+      "balance_sheet": {
+        "total_assets": 41182,
+        "total_liabilities": 19081,
+        "total_equity": 22101,
+        "cash": 3389,
+        "total_debt": 11056
+      },
+      "cash_flow": {
+        "operating_cf": 5641,
+        "investing_cf": 7375,
+        "financing_cf": -11617,
+        "fcf": 3848,
+        "capex": 1793
+      },
+      "price": {
+        "open": 301.21,
+        "close": 146.14,
+        "high": 346.47,
+        "low": 108.13,
+        "avg_price": 195.30
+      },
+      "shares_outstanding": 2470
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 60922,
+        "cogs": 16621,
+        "gross_profit": 44301,
+        "operating_income": 32972,
+        "net_income": 29760,
+        "eps": 11.93
+      },
+      "balance_sheet": {
+        "total_assets": 65728,
+        "total_liabilities": 22017,
+        "total_equity": 43711,
+        "cash": 7280,
+        "total_debt": 11056
+      },
+      "cash_flow": {
+        "operating_cf": 28943,
+        "investing_cf": -8877,
+        "financing_cf": -13633,
+        "fcf": 27042,
+        "capex": 1901
+      },
+      "price": {
+        "open": 148.59,
+        "close": 495.22,
+        "high": 505.48,
+        "low": 108.13,
+        "avg_price": 305.81
+      },
+      "shares_outstanding": 2460
+    }
+  },
+  "TSLA": {
+    "2020": {
+      "income_statement": {
+        "revenue": 31536,
+        "cogs": 24906,
+        "gross_profit": 6630,
+        "operating_income": 1994,
+        "net_income": 721,
+        "eps": 0.75
+      },
+      "balance_sheet": {
+        "total_assets": 52148,
+        "total_liabilities": 28418,
+        "total_equity": 23730,
+        "cash": 19384,
+        "total_debt": 11688
+      },
+      "cash_flow": {
+        "operating_cf": 5943,
+        "investing_cf": -6061,
+        "financing_cf": 12282,
+        "fcf": -1503,
+        "capex": 7446
+      },
+      "price": {
+        "open": 28.31,
+        "close": 235.22,
+        "high": 247.54,
+        "low": 23.27,
+        "avg_price": 135.39
+      },
+      "shares_outstanding": 933
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 53823,
+        "cogs": 40217,
+        "gross_profit": 13606,
+        "operating_income": 6523,
+        "net_income": 5519,
+        "eps": 5.60
+      },
+      "balance_sheet": {
+        "total_assets": 62131,
+        "total_liabilities": 30548,
+        "total_equity": 31583,
+        "cash": 17576,
+        "total_debt": 6842
+      },
+      "cash_flow": {
+        "operating_cf": 11497,
+        "investing_cf": -7868,
+        "financing_cf": -4827,
+        "fcf": -527,
+        "capex": 12024
+      },
+      "price": {
+        "open": 243.26,
+        "close": 352.26,
+        "high": 414.50,
+        "low": 195.55,
+        "avg_price": 273.41
+      },
+      "shares_outstanding": 985
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 81462,
+        "cogs": 60609,
+        "gross_profit": 20853,
+        "operating_income": 13656,
+        "net_income": 12556,
+        "eps": 3.62
+      },
+      "balance_sheet": {
+        "total_assets": 82338,
+        "total_liabilities": 36440,
+        "total_equity": 45898,
+        "cash": 16253,
+        "total_debt": 5748
+      },
+      "cash_flow": {
+        "operating_cf": 14724,
+        "investing_cf": -11973,
+        "financing_cf": -3527,
+        "fcf": 7566,
+        "capex": 7158
+      },
+      "price": {
+        "open": 399.93,
+        "close": 123.18,
+        "high": 414.50,
+        "low": 101.81,
+        "avg_price": 237.66
+      },
+      "shares_outstanding": 3130
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 96773,
+        "cogs": 79113,
+        "gross_profit": 17660,
+        "operating_income": 8891,
+        "net_income": 7928,
+        "eps": 2.49
+      },
+      "balance_sheet": {
+        "total_assets": 106618,
+        "total_liabilities": 43009,
+        "total_equity": 63609,
+        "cash": 16398,
+        "total_debt": 5735
+      },
+      "cash_flow": {
+        "operating_cf": 13256,
+        "investing_cf": -16091,
+        "financing_cf": 2589,
+        "fcf": 4358,
+        "capex": 8898
+      },
+      "price": {
+        "open": 118.47,
+        "close": 248.48,
+        "high": 299.29,
+        "low": 101.81,
+        "avg_price": 207.65
+      },
+      "shares_outstanding": 3174
+    }
+  },
+  "F": {
+    "2020": {
+      "income_statement": {
+        "revenue": 127144,
+        "cogs": 114651,
+        "gross_profit": 12493,
+        "operating_income": -2780,
+        "net_income": -1279,
+        "eps": -0.32
+      },
+      "balance_sheet": {
+        "total_assets": 267261,
+        "total_liabilities": 232872,
+        "total_equity": 34389,
+        "cash": 25243,
+        "total_debt": 154316
+      },
+      "cash_flow": {
+        "operating_cf": 854,
+        "investing_cf": 5637,
+        "financing_cf": 9006,
+        "fcf": -2315,
+        "capex": 3169
+      },
+      "price": {
+        "open": 9.34,
+        "close": 8.79,
+        "high": 9.58,
+        "low": 3.96,
+        "avg_price": 6.77
+      },
+      "shares_outstanding": 3970
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 136341,
+        "cogs": 120374,
+        "gross_profit": 15967,
+        "operating_income": 5012,
+        "net_income": 17937,
+        "eps": 4.45
+      },
+      "balance_sheet": {
+        "total_assets": 257035,
+        "total_liabilities": 208499,
+        "total_equity": 48536,
+        "cash": 20540,
+        "total_debt": 136430
+      },
+      "cash_flow": {
+        "operating_cf": 15788,
+        "investing_cf": 1834,
+        "financing_cf": -16429,
+        "fcf": 9618,
+        "capex": 6170
+      },
+      "price": {
+        "open": 9.00,
+        "close": 20.77,
+        "high": 21.45,
+        "low": 8.43,
+        "avg_price": 14.74
+      },
+      "shares_outstanding": 3980
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 158057,
+        "cogs": 141207,
+        "gross_profit": 16850,
+        "operating_income": 2852,
+        "net_income": -1981,
+        "eps": -0.49
+      },
+      "balance_sheet": {
+        "total_assets": 255884,
+        "total_liabilities": 210620,
+        "total_equity": 45264,
+        "cash": 25134,
+        "total_debt": 136757
+      },
+      "cash_flow": {
+        "operating_cf": 5314,
+        "investing_cf": -4620,
+        "financing_cf": 2340,
+        "fcf": -1876,
+        "capex": 7190
+      },
+      "price": {
+        "open": 21.12,
+        "close": 11.84,
+        "high": 25.87,
+        "low": 10.61,
+        "avg_price": 14.01
+      },
+      "shares_outstanding": 4003
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 176191,
+        "cogs": 155580,
+        "gross_profit": 20611,
+        "operating_income": 4320,
+        "net_income": 4347,
+        "eps": 1.08
+      },
+      "balance_sheet": {
+        "total_assets": 261832,
+        "total_liabilities": 218271,
+        "total_equity": 43561,
+        "cash": 25923,
+        "total_debt": 141697
+      },
+      "cash_flow": {
+        "operating_cf": 10000,
+        "investing_cf": -7236,
+        "financing_cf": -1523,
+        "fcf": 3102,
+        "capex": 6898
+      },
+      "price": {
+        "open": 12.02,
+        "close": 12.14,
+        "high": 15.42,
+        "low": 9.63,
+        "avg_price": 12.03
+      },
+      "shares_outstanding": 3998
+    }
+  },
+  "GM": {
+    "2020": {
+      "income_statement": {
+        "revenue": 122485,
+        "cogs": 100572,
+        "gross_profit": 21913,
+        "operating_income": 7982,
+        "net_income": 6427,
+        "eps": 4.41
+      },
+      "balance_sheet": {
+        "total_assets": 235194,
+        "total_liabilities": 191339,
+        "total_equity": 43855,
+        "cash": 19992,
+        "total_debt": 94680
+      },
+      "cash_flow": {
+        "operating_cf": 11105,
+        "investing_cf": -6620,
+        "financing_cf": 1200,
+        "fcf": -1145,
+        "capex": 12250
+      },
+      "price": {
+        "open": 36.70,
+        "close": 41.64,
+        "high": 43.22,
+        "low": 16.80,
+        "avg_price": 29.66
+      },
+      "shares_outstanding": 1445
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 127004,
+        "cogs": 107400,
+        "gross_profit": 19604,
+        "operating_income": 9835,
+        "net_income": 10019,
+        "eps": 6.84
+      },
+      "balance_sheet": {
+        "total_assets": 244718,
+        "total_liabilities": 195804,
+        "total_equity": 48914,
+        "cash": 20067,
+        "total_debt": 88096
+      },
+      "cash_flow": {
+        "operating_cf": 14820,
+        "investing_cf": -13250,
+        "financing_cf": -1670,
+        "fcf": 5618,
+        "capex": 9202
+      },
+      "price": {
+        "open": 42.99,
+        "close": 58.13,
+        "high": 67.21,
+        "low": 38.94,
+        "avg_price": 53.08
+      },
+      "shares_outstanding": 1442
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 156735,
+        "cogs": 133440,
+        "gross_profit": 23295,
+        "operating_income": 13209,
+        "net_income": 9934,
+        "eps": 6.87
+      },
+      "balance_sheet": {
+        "total_assets": 264037,
+        "total_liabilities": 211889,
+        "total_equity": 52148,
+        "cash": 19153,
+        "total_debt": 98340
+      },
+      "cash_flow": {
+        "operating_cf": 18594,
+        "investing_cf": -16090,
+        "financing_cf": -3524,
+        "fcf": 7994,
+        "capex": 10600
+      },
+      "price": {
+        "open": 58.80,
+        "close": 33.68,
+        "high": 67.21,
+        "low": 30.33,
+        "avg_price": 38.91
+      },
+      "shares_outstanding": 1432
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 171842,
+        "cogs": 147032,
+        "gross_profit": 24810,
+        "operating_income": 12118,
+        "net_income": 10083,
+        "eps": 7.12
+      },
+      "balance_sheet": {
+        "total_assets": 273064,
+        "total_liabilities": 218651,
+        "total_equity": 54413,
+        "cash": 18853,
+        "total_debt": 102290
+      },
+      "cash_flow": {
+        "operating_cf": 21060,
+        "investing_cf": -17830,
+        "financing_cf": -4010,
+        "fcf": 10460,
+        "capex": 10600
+      },
+      "price": {
+        "open": 33.95,
+        "close": 35.96,
+        "high": 43.33,
+        "low": 26.30,
+        "avg_price": 34.32
+      },
+      "shares_outstanding": 1398
+    }
+  },
+  "JPM": {
+    "2020": {
+      "income_statement": {
+        "revenue": 119543,
+        "cogs": 63316,
+        "gross_profit": 56227,
+        "operating_income": 27089,
+        "net_income": 29131,
+        "eps": 8.88
+      },
+      "balance_sheet": {
+        "total_assets": 3386071,
+        "total_liabilities": 3088237,
+        "total_equity": 297834,
+        "cash": 521456,
+        "total_debt": 442765
+      },
+      "cash_flow": {
+        "operating_cf": 36567,
+        "investing_cf": -303714,
+        "financing_cf": 335103,
+        "fcf": 31367,
+        "capex": 5200
+      },
+      "price": {
+        "open": 138.20,
+        "close": 127.07,
+        "high": 141.10,
+        "low": 76.91,
+        "avg_price": 106.01
+      },
+      "shares_outstanding": 3049
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 127202,
+        "cogs": 57770,
+        "gross_profit": 69432,
+        "operating_income": 50718,
+        "net_income": 48334,
+        "eps": 15.39
+      },
+      "balance_sheet": {
+        "total_assets": 3743567,
+        "total_liabilities": 3425192,
+        "total_equity": 318375,
+        "cash": 749443,
+        "total_debt": 436899
+      },
+      "cash_flow": {
+        "operating_cf": 1592,
+        "investing_cf": -308413,
+        "financing_cf": 370131,
+        "fcf": -5008,
+        "capex": 6600
+      },
+      "price": {
+        "open": 125.26,
+        "close": 158.35,
+        "high": 172.96,
+        "low": 125.26,
+        "avg_price": 149.11
+      },
+      "shares_outstanding": 2997
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 128695,
+        "cogs": 54000,
+        "gross_profit": 74695,
+        "operating_income": 45124,
+        "net_income": 37676,
+        "eps": 12.09
+      },
+      "balance_sheet": {
+        "total_assets": 3665743,
+        "total_liabilities": 3372510,
+        "total_equity": 293233,
+        "cash": 565563,
+        "total_debt": 413211
+      },
+      "cash_flow": {
+        "operating_cf": 35669,
+        "investing_cf": 142574,
+        "financing_cf": -216697,
+        "fcf": 28469,
+        "capex": 7200
+      },
+      "price": {
+        "open": 158.07,
+        "close": 134.10,
+        "high": 172.96,
+        "low": 101.28,
+        "avg_price": 127.12
+      },
+      "shares_outstanding": 2946
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 154792,
+        "cogs": 60470,
+        "gross_profit": 94322,
+        "operating_income": 62503,
+        "net_income": 49552,
+        "eps": 16.23
+      },
+      "balance_sheet": {
+        "total_assets": 3875393,
+        "total_liabilities": 3540994,
+        "total_equity": 334399,
+        "cash": 622712,
+        "total_debt": 427866
+      },
+      "cash_flow": {
+        "operating_cf": 48976,
+        "investing_cf": -94000,
+        "financing_cf": 73050,
+        "fcf": 41176,
+        "capex": 7800
+      },
+      "price": {
+        "open": 138.76,
+        "close": 170.10,
+        "high": 172.96,
+        "low": 123.10,
+        "avg_price": 148.03
+      },
+      "shares_outstanding": 2894
+    }
+  }
+}
