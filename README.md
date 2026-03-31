@@ -3,7 +3,6 @@
 > An OpenEnv-compatible RL environment simulating a financial data terminal for training agents on multi-step analytical reasoning.
 
 [![OpenEnv](https://img.shields.io/badge/OpenEnv-compatible-blue)](https://github.com/meta-pytorch/OpenEnv)
-[![HuggingFace](https://img.shields.io/badge/🤗-HuggingFace%20Space-yellow)](https://huggingface.co/spaces/openenv/finquerygym)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-green)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
 
@@ -11,7 +10,7 @@
 
 ## Overview
 
-**FinQueryGym** is an RL environment where an agent operates like a financial analyst at a data terminal. The agent does not receive a pre-packaged dataset — it must decide *which data to fetch, in what order, and how to combine it* to answer verifiable financial questions.
+**FinQuery** is an RL environment where an agent operates like a financial analyst at a data terminal. The agent does not receive a pre-packaged dataset — it must decide *which data to fetch, in what order, and how to combine it* to answer verifiable financial questions.
 
 The agent interacts with a suite of deterministic financial data tools across multi-step episodes. Rewards are issued at every step, making the reward function dense across the full trajectory rather than sparse at the end.
 
@@ -23,7 +22,7 @@ The hard task reliably defeats frontier models that hallucinate intermediate val
 
 Bloomberg terminals charge ~$25,000/user/year. Every investment firm, hedge fund, and financial research team in the world pays this. The bottleneck is not data — it's the analyst skill to navigate and reason across that data.
 
-FinQueryGym provides the first open RL training environment for this skill. Epoch AI's January 2026 research report on frontier lab RL environment procurement explicitly cites a "Bloomberg terminal clone" as a key domain labs are actively building. FinQueryGym is the open-source version of that.
+FinQuery provides the first open RL training environment for this skill. Epoch AI's January 2026 research report on frontier lab RL environment procurement explicitly cites a "Bloomberg terminal clone" as a key domain labs are actively building. FinQuery is the open-source version of that.
 
 ---
 
@@ -91,7 +90,7 @@ All tools return deterministic JSON from pre-built synthetic datasets. No extern
 | `get_balance_sheet` | `ticker`, `year` | Total assets, liabilities, equity, cash, debt | `{"total_assets": 352583, "cash": 29965, ...}` |
 | `get_cash_flow` | `ticker`, `year` | Operating CF, investing CF, financing CF, FCF, capex | `{"operating_cf": 110543, "fcf": 99584, ...}` |
 | `get_price_history` | `ticker`, `years` | Annual open/close/high/low, avg price per year | `{"2020": {"close": 132.69}, ...}` |
-| `get_ratios` | `ticker`, `year` | P/E, P/B, EV/EBITDA, ROE, ROA, debt/equity, current ratio | `{"pe_ratio": 28.4, "roe": 0.147, ...}` |
+| `get_ratios` | `ticker`, `year` | P/E, P/B, EV/EBITDA, ROE, ROA, debt/equity | `{"pe_ratio": 28.4, "roe": 0.147, ...}` |
 | `compare_to_sector` | `ticker`, `metric`, `year` | Returns metric value vs sector median and percentile rank | `{"value": 28.4, "sector_median": 22.1, "percentile": 71}` |
 | `compute` | `expression` | Evaluates arithmetic expression, returns float | `{"result": 0.1847}` |
 | `submit_answer` | `answer` | Triggers grader, returns score breakdown | `{"score": 0.87, "breakdown": {...}}` |
@@ -113,8 +112,8 @@ All financial figures are in millions USD unless otherwise noted. All data is sy
 
 **Grader logic:**
 ```
-score = 1.0 if abs(answer - ground_truth) < 0.01
-score = 0.5 if abs(answer - ground_truth) < 0.1
+score = 1.0 if abs(answer - ground_truth) < 0.05
+score = 0.5 if abs(answer - ground_truth) < 0.5
 score = 0.0 otherwise
 ```
 
@@ -133,9 +132,8 @@ score = 0.0 otherwise
 
 **Grader logic:**
 ```
-correct_company_identified: 0.40
-correct_sector_delta (within 0.5): 0.40
-efficient_path (steps ≤ 10): 0.20
+correct_company_identified: 0.50
+correct_sector_delta (within 0.5): 0.50
 ```
 
 **Difficulty rationale:** Requires coordinating data across multiple companies and understanding sector relative valuation. Models frequently confuse which comparison direction is "favorable."
@@ -144,10 +142,10 @@ efficient_path (steps ≤ 10): 0.20
 
 ### Task 3 — Hard: Multi-Year Anomaly Detection
 
-**Description:** Identify which company in a set had a specific anomalous pattern across 4 years of financial history, requiring cross-referencing income statement, cash flow, and ratio data to distinguish genuine anomalies from noise.
+**Description:** Identify which company in a set had a specific anomalous pattern across 4 years of financial history, requiring cross-referencing cash flow and ratio data.
 
 **Example prompt:**
-> *"Among Tesla, Ford, and GM — which company had negative free cash flow in at least 2 of the 4 fiscal years from 2020–2023, AND had a P/E ratio above 30 in any of those same years? For each qualifying company, state which specific years had negative FCF and which years had P/E > 30."*
+> *"Among Tesla, Ford, and GM — which company had negative free cash flow in at least 2 of the 4 fiscal years from 2020–2023, AND had a P/E ratio above 30 in any of those same years?"*
 
 **Expected trajectory:** `get_cash_flow` × 12 + `get_ratios` × 12 → cross-reference → `submit_answer` (25–30 steps)
 
@@ -156,7 +154,7 @@ efficient_path (steps ≤ 10): 0.20
 correct_companies_identified: 0.30
 correct_fcf_years: 0.30  (per company, per year — partial credit)
 correct_pe_years: 0.30   (per company, per year — partial credit)
-efficiency_bonus: 0.10   (steps ≤ 20)
+efficiency_bonus: 0.10   (steps ≤ 24)
 ```
 
 **Difficulty rationale:** Frontier models hallucinate intermediate values under multi-hop cross-referencing. Requires holding 48 data points in context and correctly joining them. GPT-4o baseline scores ~0.28 on this task.
@@ -169,16 +167,16 @@ Rewards are dense — issued at every step, not just at episode end.
 
 ```
 Step-level rewards:
-  +0.05  Fetching data directly relevant to the task (e.g. correct ticker, correct year)
+  +0.05  Fetching data directly relevant to the task
   +0.10  Correct intermediate computation via compute tool
-  -0.02  Fetching data not relevant to the task (irrelevant ticker/metric/year)
-  -0.05  Calling submit_answer with no prior data fetches (penalises blind guessing)
-  -0.01  Per redundant duplicate fetch (same ticker + year + tool called twice)
+  -0.02  Fetching data not relevant to the task
+  -0.05  Calling submit_answer with no prior data fetches (blind guessing)
+  -0.01  Duplicate fetch (same ticker + year + tool called twice)
 
 Terminal rewards (on submit_answer):
-  +0.00 to +0.70  Scaled by grader accuracy score (see task-specific grader above)
-  +0.10           Efficiency bonus if completed in ≤ 60% of max allowed steps
-  -0.10           Penalty if answer submitted without fetching minimum required data
+  +0.00 to +0.70  Scaled by grader accuracy score
+  +0.10           Efficiency bonus if completed in ≤ 60% of max steps
+  -0.10           Penalty if submitted without minimum required data fetches
 
 Episode total: sum of all step rewards + terminal reward, clipped to [0.0, 1.0]
 ```
@@ -192,7 +190,7 @@ Baseline agent: `gpt-4o-mini` via OpenAI API, zero-shot, no chain-of-thought.
 | Task | Difficulty | Baseline Score | Notes |
 |------|-----------|---------------|-------|
 | Net Profit Margin | Easy | 0.71 | Occasionally miscalculates from wrong revenue line |
-| Multi-Company P/E Comparison | Medium | 0.44 | Frequently confuses sector delta direction |
+| Multi-Company EV/EBITDA | Medium | 0.44 | Frequently confuses sector delta direction |
 | Multi-Year FCF + P/E Anomaly | Hard | 0.28 | Hallucinates ~40% of intermediate values |
 
 ---
@@ -203,36 +201,22 @@ Baseline agent: `gpt-4o-mini` via OpenAI API, zero-shot, no chain-of-thought.
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-org/finquerygym
-cd finquerygym
+git clone https://github.com/ashutosh887/finquery
+cd finquery
 
 # Install dependencies
 pip install -e .
 
-# Run the server locally
+# Run the server
 uvicorn server.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Docker
-
-```bash
-# Build
-docker build -t finquerygym .
-
-# Run
-docker run -p 8000:8000 finquerygym
-
-# Verify
-curl http://localhost:8000/reset
-```
-
-### Use as OpenEnv Client
+### Use as Client
 
 ```python
-from finquerygym import FinQueryEnv, FinQueryAction
+from finquery import FinQueryEnv, FinQueryAction
 
-# Connect to hosted Space
-with FinQueryEnv(base_url="https://openenv-finquerygym.hf.space").sync() as env:
+with FinQueryEnv(base_url="http://localhost:8000").sync() as env:
     obs = env.reset()
     print(obs.observation.task_description)
 
@@ -265,7 +249,7 @@ python baseline.py
 
 ---
 
-## Additional Endpoints
+## Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -274,40 +258,42 @@ python baseline.py
 | `/state` | GET | Current episode metadata |
 | `/tasks` | GET | List all tasks with action schema |
 | `/grader` | POST | Score a completed episode |
-| `/baseline` | POST | Run baseline agent on all 3 tasks, return scores |
+| `/baseline` | POST | Run baseline agent on all tasks |
+| `/health` | GET | Health check |
 
 ---
 
 ## Project Structure
 
 ```
-finquerygym/
-├── models.py                  # FinQueryAction, FinQueryObservation, FinQueryState
-├── client.py                  # FinQueryEnv(EnvClient)
-├── openenv.yaml               # Environment manifest
+finquery/
+├── finquery/
+│   ├── models.py              # FinQueryAction, FinQueryObservation, FinQueryState
+│   └── client.py              # FinQueryEnv HTTP client
+├── server/
+│   ├── app.py                 # FastAPI app + all endpoints
+│   ├── finquery_environment.py  # Core environment logic
+│   ├── _baseline_runner.py    # OpenAI baseline agent
+│   ├── data/
+│   │   ├── financials.json    # Synthetic financial dataset (10 companies, 4 years)
+│   │   └── sectors.json       # Sector median benchmarks
+│   ├── tools/
+│   │   ├── income_statement.py
+│   │   ├── balance_sheet.py
+│   │   ├── cash_flow.py
+│   │   ├── price_history.py
+│   │   ├── ratios.py
+│   │   └── sector_compare.py
+│   ├── graders/
+│   │   ├── task1_grader.py
+│   │   ├── task2_grader.py
+│   │   └── task3_grader.py
+│   └── rewards/
+│       └── reward_engine.py   # Dense per-step reward computation
+├── baseline.py                # CLI baseline runner
+├── openenv.yaml               # OpenEnv manifest
 ├── pyproject.toml
-├── Dockerfile
-├── baseline.py                # OpenAI API baseline script
-├── README.md
-└── server/
-    ├── app.py                 # FastAPI app + all endpoints
-    ├── finquery_environment.py  # Core Environment logic
-    ├── data/
-    │   ├── financials.json    # Synthetic financial dataset (50 companies, 5 years)
-    │   └── sectors.json       # Sector median benchmarks
-    ├── tools/
-    │   ├── income_statement.py
-    │   ├── balance_sheet.py
-    │   ├── cash_flow.py
-    │   ├── price_history.py
-    │   ├── ratios.py
-    │   └── sector_compare.py
-    ├── graders/
-    │   ├── task1_grader.py
-    │   ├── task2_grader.py
-    │   └── task3_grader.py
-    └── rewards/
-        └── reward_engine.py   # Dense per-step reward computation
+└── README.md
 ```
 
 ---
@@ -315,7 +301,7 @@ finquerygym/
 ## openenv.yaml
 
 ```yaml
-name: finquerygym
+name: finquery
 version: 0.1.0
 description: >
   RL environment for training financial analysis agents on multi-step
