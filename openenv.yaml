@@ -1,4 +1,4 @@
-name: finquerygym
+name: finquery
 version: 0.1.0
 description: >
   RL environment for training financial analysis agents on multi-step
@@ -12,13 +12,28 @@ tasks:
   - id: task1_easy
     name: Single-Metric Computation
     difficulty: easy
+    description: "Compute Apple's net profit margin for FY2022"
   - id: task2_medium
     name: Multi-Company Comparison
     difficulty: medium
+    description: "Compare EV/EBITDA across MSFT, GOOGL, META vs sector median"
   - id: task3_hard
     name: Multi-Year Anomaly Detection
     difficulty: hard
+    description: "Detect FCF/PE anomalies across TSLA, F, GM over 2020-2023"
 action_schema: FinQueryAction
 observation_schema: FinQueryObservation
+state_schema: FinQueryState
 max_steps: 40
 reward_range: [0.0, 1.0]
+endpoints:
+  reset: POST /reset
+  step: POST /step
+  state: GET /state
+  tasks: GET /tasks
+  grader: POST /grader
+  baseline: POST /baseline
+  history: GET /history
+  leaderboard: GET /leaderboard
+  health: GET /health
+  websocket: /ws

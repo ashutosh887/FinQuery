@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Baseline runner — executes all 3 FinQueryGym tasks using gpt-4o-mini.
+"""Baseline runner — executes all 3 FinQuery tasks using gpt-4o-mini.
 
 Usage:
     export OPENAI_API_KEY=your_key
@@ -9,16 +9,18 @@ Usage:
 import os
 import sys
 
+
 def main():
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         print("Error: OPENAI_API_KEY environment variable not set", file=sys.stderr)
         sys.exit(1)
 
-    # Import after env check so missing deps give a clear error
+    from server.database import init_db
     from server.finquery_environment import FinQueryEnvironment
     from server._baseline_runner import run_single_task
 
+    init_db()
     env = FinQueryEnvironment()
 
     tasks = [
