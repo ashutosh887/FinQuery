@@ -101,69 +101,48 @@ All financial figures are in millions USD unless otherwise noted. All data is sy
 
 ## Tasks
 
-### Task 1 — Easy: Single-Metric Lookup with Computation
+### Task 1 -- Easy: Single-Metric Lookup with Computation
 
-**Description:** Given a single company, compute a specific financial metric that requires fetching 2–3 data points and one calculation step.
+**Description:** Given a single company, compute a specific financial metric that requires fetching data and one calculation step.
 
 **Example prompt:**
 > *"What was Apple's net profit margin for fiscal year 2022? Express as a percentage rounded to 2 decimal places."*
 
-**Expected trajectory:** `get_income_statement` → `compute` → `submit_answer` (3 steps)
-
-**Grader logic:**
-```
-score = 1.0 if abs(answer - ground_truth) < 0.05
-score = 0.5 if abs(answer - ground_truth) < 0.5
-score = 0.0 otherwise
-```
+**Expected trajectory:** `get_income_statement` -> `compute` -> `submit_answer` (3 steps)
 
 **Difficulty rationale:** Single company, single year, formula is standard. Tests basic tool use and arithmetic.
 
 ---
 
-### Task 2 — Medium: Multi-Company Ratio Comparison
+### Task 2 -- Medium: Multi-Company Ratio Comparison
 
-**Description:** Compare a specific valuation or performance ratio across 3 companies against their sector median. Identify which is most/least attractive by a given criterion.
+**Description:** Compare a specific valuation ratio across 3 companies against their sector median.
 
 **Example prompt:**
-> *"Among Microsoft, Google, and Meta, which company had the most favorable EV/EBITDA relative to the tech sector median in 2023? By how many points did it differ from the sector median?"*
+> *"Among Microsoft, Google, and Meta, which company had the most favorable EV/EBITDA relative to the tech sector median in 2023? By how many points did it differ?"*
 
-**Expected trajectory:** `get_ratios` × 3 → `compare_to_sector` × 3 → `compute` → `submit_answer` (8 steps)
+**Expected trajectory:** `get_ratios` x 3 -> `compare_to_sector` x 3 -> `compute` -> `submit_answer` (8 steps)
 
-**Grader logic:**
-```
-correct_company_identified: 0.50
-correct_sector_delta (within 0.5): 0.50
-```
-
-**Difficulty rationale:** Requires coordinating data across multiple companies and understanding sector relative valuation. Models frequently confuse which comparison direction is "favorable."
+**Difficulty rationale:** Requires coordinating data across multiple companies and understanding sector relative valuation.
 
 ---
 
-### Task 3 — Hard: Multi-Year Anomaly Detection
+### Task 3 -- Hard: Multi-Year Anomaly Detection
 
 **Description:** Identify which company in a set had a specific anomalous pattern across 4 years of financial history, requiring cross-referencing cash flow and ratio data.
 
 **Example prompt:**
-> *"Among Tesla, Ford, and GM — which company had negative free cash flow in at least 2 of the 4 fiscal years from 2020–2023, AND had a P/E ratio above 30 in any of those same years?"*
+> *"Among Tesla, Ford, and GM -- which company had negative free cash flow in at least 2 of the 4 fiscal years from 2020-2023, AND had a P/E ratio above 30 in any of those same years?"*
 
-**Expected trajectory:** `get_cash_flow` × 12 + `get_ratios` × 12 → cross-reference → `submit_answer` (25–30 steps)
+**Expected trajectory:** `get_cash_flow` x 12 + `get_ratios` x 12 -> cross-reference -> `submit_answer` (25-30 steps)
 
-**Grader logic:**
-```
-correct_companies_identified: 0.30
-correct_fcf_years: 0.30  (per company, per year — partial credit)
-correct_pe_years: 0.30   (per company, per year — partial credit)
-efficiency_bonus: 0.10   (steps ≤ 24)
-```
-
-**Difficulty rationale:** Frontier models hallucinate intermediate values under multi-hop cross-referencing. Requires holding 48 data points in context and correctly joining them. GPT-4o baseline scores ~0.28 on this task.
+**Difficulty rationale:** Frontier models hallucinate intermediate values under multi-hop cross-referencing. GPT-4o baseline scores ~0.28 on this task.
 
 ---
 
 ## Reward Function
 
-Rewards are dense — issued at every step, not just at episode end.
+Rewards are dense -- issued at every step, not just at episode end.
 
 ```
 Step-level rewards:
@@ -175,7 +154,7 @@ Step-level rewards:
 
 Terminal rewards (on submit_answer):
   +0.00 to +0.70  Scaled by grader accuracy score
-  +0.10           Efficiency bonus if completed in ≤ 60% of max steps
+  +0.10           Efficiency bonus if completed in <= 60% of max steps
   -0.10           Penalty if submitted without minimum required data fetches
 
 Episode total: sum of all step rewards + terminal reward, clipped to [0.0, 1.0]
@@ -211,32 +190,59 @@ pip install -e .
 uvicorn server.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Use as Client
+### Use as Client (HTTP)
 
 ```python
 from finquery import FinQueryEnv, FinQueryAction
 
 with FinQueryEnv(base_url="http://localhost:8000").sync() as env:
-    obs = env.reset()
+    # Start an episode
+    obs = env.reset(agent_name="my_agent")
+    print(obs.episode_id)              # unique episode ID
     print(obs.observation.task_description)
 
-    # Fetch income statement
+    # Fetch data
     result = env.step(FinQueryAction(
         action_type="get_income_statement",
         ticker="AAPL",
-        year=2023
+        year=2022
     ))
-    print(result.observation.tool_result)
-    print(result.reward)  # step-level reward
+    print(result.reward)  # +0.05 for relevant fetch
 
     # Submit answer
     result = env.step(FinQueryAction(
         action_type="submit_answer",
-        answer=24.68,
-        reasoning="Net income / Revenue = 96995 / 394328 = 24.60%"
+        answer=25.31
     ))
-    print(result.reward)    # terminal reward
-    print(result.done)      # True
+    print(result.reward)  # terminal reward
+    print(result.done)    # True
+
+    # Check leaderboard
+    print(env.leaderboard())
+```
+
+### Use via WebSocket
+
+```python
+import json, websockets, asyncio
+
+async def run():
+    async with websockets.connect("ws://localhost:8000/ws") as ws:
+        # Reset
+        await ws.send(json.dumps({"type": "reset", "task_id": "task1_easy"}))
+        result = json.loads(await ws.recv())
+        episode_id = result["episode_id"]
+
+        # Step
+        await ws.send(json.dumps({
+            "type": "step",
+            "episode_id": episode_id,
+            "action": {"action_type": "get_income_statement", "ticker": "AAPL", "year": 2022}
+        }))
+        result = json.loads(await ws.recv())
+        print(result["reward"])
+
+asyncio.run(run())
 ```
 
 ### Run Baseline
@@ -244,7 +250,6 @@ with FinQueryEnv(base_url="http://localhost:8000").sync() as env:
 ```bash
 export OPENAI_API_KEY=your_key_here
 python baseline.py
-# Outputs scores for all 3 tasks
 ```
 
 ---
@@ -253,13 +258,16 @@ python baseline.py
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/reset` | POST | Start new episode, returns initial observation |
-| `/step` | POST | Take action, returns observation + reward + done |
-| `/state` | GET | Current episode metadata |
+| `/reset` | POST | Start new episode, returns `episode_id` + initial observation |
+| `/step` | POST | Take action (requires `episode_id`), returns observation + reward + done |
+| `/state` | GET | Episode metadata (query param: `episode_id`) |
 | `/tasks` | GET | List all tasks with action schema |
-| `/grader` | POST | Score a completed episode |
+| `/grader` | POST | Score an answer against ground truth |
 | `/baseline` | POST | Run baseline agent on all tasks |
+| `/history` | GET | Episode history (query params: `limit`, `task_id`) |
+| `/leaderboard` | GET | Top scores by agent (query params: `limit`, `task_id`) |
 | `/health` | GET | Health check |
+| `/ws` | WebSocket | Real-time episode interaction |
 
 ---
 
@@ -271,8 +279,9 @@ finquery/
 │   ├── models.py              # FinQueryAction, FinQueryObservation, FinQueryState
 │   └── client.py              # FinQueryEnv HTTP client
 ├── server/
-│   ├── app.py                 # FastAPI app + all endpoints
-│   ├── finquery_environment.py  # Core environment logic
+│   ├── app.py                 # FastAPI app + all endpoints + WebSocket
+│   ├── database.py            # SQLite persistence (episodes + leaderboard)
+│   ├── finquery_environment.py  # Core environment logic (concurrent episodes)
 │   ├── _baseline_runner.py    # OpenAI baseline agent
 │   ├── data/
 │   │   ├── financials.json    # Synthetic financial dataset (10 companies, 4 years)
@@ -294,37 +303,6 @@ finquery/
 ├── openenv.yaml               # OpenEnv manifest
 ├── pyproject.toml
 └── README.md
-```
-
----
-
-## openenv.yaml
-
-```yaml
-name: finquery
-version: 0.1.0
-description: >
-  RL environment for training financial analysis agents on multi-step
-  data terminal tasks with dense per-step reward signals.
-tags:
-  - openenv
-  - finance
-  - reasoning
-  - enterprise
-tasks:
-  - id: task1_easy
-    name: Single-Metric Computation
-    difficulty: easy
-  - id: task2_medium
-    name: Multi-Company Comparison
-    difficulty: medium
-  - id: task3_hard
-    name: Multi-Year Anomaly Detection
-    difficulty: hard
-action_schema: FinQueryAction
-observation_schema: FinQueryObservation
-max_steps: 40
-reward_range: [0.0, 1.0]
 ```
 
 ---
