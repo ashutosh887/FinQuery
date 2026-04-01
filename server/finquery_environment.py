@@ -23,8 +23,6 @@ from server.rewards.reward_engine import (
 from server.database import save_episode, finish_episode, record_leaderboard
 
 DATA_DIR = Path(__file__).parent / "data"
-MAX_STEPS = 40
-
 TASKS = {
     "task1_easy": {
         "name": "Single-Metric Computation",
@@ -33,7 +31,7 @@ TASKS = {
             "What was Apple's net profit margin for fiscal year 2022? "
             "Express as a percentage rounded to 2 decimal places."
         ),
-        "max_steps": MAX_STEPS,
+        "max_steps": 10,
         "required_fetches": task1_grader.GROUND_TRUTH["required_fetches"],
         "min_fetches": task1_grader.GROUND_TRUTH["min_fetches"],
         "expected_intermediates": [25.31],
@@ -48,7 +46,7 @@ TASKS = {
             "did it differ from the sector median? Submit your answer as "
             '{"company": "TICKER", "delta": NUMBER}.'
         ),
-        "max_steps": MAX_STEPS,
+        "max_steps": 20,
         "required_fetches": task2_grader.GROUND_TRUTH["required_fetches"],
         "min_fetches": task2_grader.GROUND_TRUTH["min_fetches"],
         "expected_intermediates": [12.83, 17.34, 26.29, -5.47, -0.96, 7.99],
@@ -65,7 +63,7 @@ TASKS = {
             '{"qualifying_companies": ["TICKER"], "details": {"TICKER": '
             '{"negative_fcf_years": [YEAR, ...], "pe_above_30_years": [YEAR, ...]}}}.'
         ),
-        "max_steps": MAX_STEPS,
+        "max_steps": 40,
         "required_fetches": task3_grader.GROUND_TRUTH["required_fetches"],
         "min_fetches": task3_grader.GROUND_TRUTH["min_fetches"],
         "expected_intermediates": [],
@@ -247,7 +245,11 @@ class FinQueryEnvironment:
                 ep["final_answer"] = answer
                 ep["done"] = True
 
-                grader_result = task["grader"].grade(answer)
+                grader_result = task["grader"].grade(
+                    answer,
+                    step_count=ep["step_count"],
+                    max_steps=ep["max_steps"],
+                )
                 grader_score = grader_result["score"]
 
                 terminal_reward = compute_terminal_reward(
@@ -288,7 +290,7 @@ class FinQueryEnvironment:
                     ep["cumulative_reward"], ep["step_count"],
                 )
 
-                return self._build_response(
+                response = self._build_response(
                     ep,
                     tool_result=tool_result,
                     tool_error=None,
@@ -296,6 +298,9 @@ class FinQueryEnvironment:
                     feedback=feedback,
                     status="answered",
                 )
+                # Free memory — episode data is persisted in DB
+                del self._episodes[episode_id]
+                return response
             else:
                 raise ValueError(f"Unknown action_type: {action_type}")
 
@@ -335,6 +340,8 @@ class FinQueryEnvironment:
                 episode_id, ep["step_count"], ep["cumulative_reward"],
                 None, "failed_max_steps",
             )
+            # Free memory — episode data is persisted in DB
+            del self._episodes[episode_id]
 
         return self._build_response(
             ep,
@@ -349,20 +356,19 @@ class FinQueryEnvironment:
     def state(self, episode_id: str | None = None) -> dict:
         if episode_id and episode_id in self._episodes:
             ep = self._episodes[episode_id]
+        elif not episode_id and self._episodes:
+            # No episode_id given — return most recent active episode
+            ep = list(self._episodes.values())[-1]
         else:
-            # Fallback: return most recent episode or empty state
-            if self._episodes:
-                ep = list(self._episodes.values())[-1]
-            else:
-                return {
-                    "episode_id": "",
-                    "task_id": "",
-                    "task_difficulty": "easy",
-                    "step_count": 0,
-                    "fetched_data": {},
-                    "answer_submitted": False,
-                    "score_so_far": 0.0,
-                }
+            return {
+                "episode_id": "",
+                "task_id": "",
+                "task_difficulty": "easy",
+                "step_count": 0,
+                "fetched_data": {},
+                "answer_submitted": False,
+                "score_so_far": 0.0,
+            }
         return {
             "episode_id": ep["episode_id"],
             "task_id": ep["task_id"],
