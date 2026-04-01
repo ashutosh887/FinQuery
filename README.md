@@ -3,6 +3,7 @@
 > An OpenEnv-compatible RL environment simulating a financial data terminal for training agents on multi-step analytical reasoning.
 
 [![OpenEnv](https://img.shields.io/badge/OpenEnv-compatible-blue)](https://github.com/meta-pytorch/OpenEnv)
+[![HuggingFace](https://img.shields.io/badge/🤗-HuggingFace%20Space-yellow)](https://huggingface.co/spaces/openenv/finquery)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-green)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
 
@@ -10,17 +11,17 @@
 
 ## Overview
 
-**FinQuery** is an RL environment where an agent operates like a financial analyst at a data terminal. The agent does not receive a pre-packaged dataset — it must decide *which data to fetch, in what order, and how to combine it* to answer verifiable financial questions.
+**FinQuery** is an RL environment where an agent operates like a financial analyst at a data terminal. The agent does not receive a pre-packaged dataset -- it must decide *which data to fetch, in what order, and how to combine it* to answer verifiable financial questions.
 
 The agent interacts with a suite of deterministic financial data tools across multi-step episodes. Rewards are issued at every step, making the reward function dense across the full trajectory rather than sparse at the end.
 
-The hard task reliably defeats frontier models that hallucinate intermediate values under multi-hop reasoning pressure — making this a meaningful training signal for financial reasoning agents.
+The hard task reliably defeats frontier models that hallucinate intermediate values under multi-hop reasoning pressure -- making this a meaningful training signal for financial reasoning agents.
 
 ---
 
 ## Motivation
 
-Bloomberg terminals charge ~$25,000/user/year. Every investment firm, hedge fund, and financial research team in the world pays this. The bottleneck is not data — it's the analyst skill to navigate and reason across that data.
+Bloomberg terminals charge ~$25,000/user/year. Every investment firm, hedge fund, and financial research team in the world pays this. The bottleneck is not data -- it's the analyst skill to navigate and reason across that data.
 
 FinQuery provides the first open RL training environment for this skill. Epoch AI's January 2026 research report on frontier lab RL environment procurement explicitly cites a "Bloomberg terminal clone" as a key domain labs are actively building. FinQuery is the open-source version of that.
 
@@ -42,27 +43,27 @@ class FinQueryAction(BaseModel):
         "compute",
         "submit_answer"
     ]
-    ticker: Optional[str] = None          # e.g. "AAPL", "MSFT"
-    year: Optional[int] = None            # e.g. 2023
-    years: Optional[List[int]] = None     # e.g. [2020, 2021, 2022, 2023]
-    metric: Optional[str] = None          # e.g. "revenue", "net_income", "fcf"
-    expression: Optional[str] = None      # arithmetic expression for compute
-    answer: Optional[Any] = None          # final answer for submit_answer
-    reasoning: Optional[str] = None       # agent's chain of thought (logged, not graded)
+    ticker: Optional[str] = None        # e.g. "AAPL", "MSFT"
+    year: Optional[int] = None          # e.g. 2023
+    years: Optional[List[int]] = None   # e.g. [2020, 2021, 2022, 2023]
+    metric: Optional[str] = None        # e.g. "pe_ratio"
+    expression: Optional[str] = None    # arithmetic for compute action
+    answer: Optional[Any] = None        # final answer for submit_answer
+    reasoning: Optional[str] = None     # chain of thought (logged, not graded)
 ```
 
 ### Observation Space
 
 ```python
 class FinQueryObservation(BaseModel):
-    task_description: str                  # what the agent must solve
-    tool_result: Optional[Dict[str, Any]]  # result of last action
-    tool_error: Optional[str]              # error message if action was invalid
+    task_description: str
+    tool_result: Optional[Dict[str, Any]] = None
+    tool_error: Optional[str] = None
     steps_taken: int
     steps_remaining: int
-    tickers_queried: List[str]             # audit trail of what was fetched
+    tickers_queried: List[str]
     episode_status: Literal["ongoing", "answered", "failed_max_steps"]
-    feedback: Optional[str]               # non-graded hint on last action relevance
+    feedback: Optional[str] = None
 ```
 
 ### State
@@ -73,7 +74,7 @@ class FinQueryState(BaseModel):
     task_id: str
     task_difficulty: Literal["easy", "medium", "hard"]
     step_count: int
-    fetched_data: Dict[str, Any]          # accumulated data across all fetches
+    fetched_data: Dict[str, Any]
     answer_submitted: bool
     score_so_far: float
 ```
@@ -82,126 +83,150 @@ class FinQueryState(BaseModel):
 
 ## Tools Reference
 
-All tools return deterministic JSON from pre-built synthetic datasets. No external API calls are made at runtime.
+All tools return deterministic JSON from `server/data/`. No external API calls at runtime.
 
-| Tool | Parameters | Returns | Example |
-|------|-----------|---------|---------|
-| `get_income_statement` | `ticker`, `year` | Revenue, COGS, gross profit, operating income, net income, EPS | `{"revenue": 394328, "net_income": 96995, ...}` |
-| `get_balance_sheet` | `ticker`, `year` | Total assets, liabilities, equity, cash, debt | `{"total_assets": 352583, "cash": 29965, ...}` |
-| `get_cash_flow` | `ticker`, `year` | Operating CF, investing CF, financing CF, FCF, capex | `{"operating_cf": 110543, "fcf": 99584, ...}` |
-| `get_price_history` | `ticker`, `years` | Annual open/close/high/low, avg price per year | `{"2020": {"close": 132.69}, ...}` |
-| `get_ratios` | `ticker`, `year` | P/E, P/B, EV/EBITDA, ROE, ROA, debt/equity | `{"pe_ratio": 28.4, "roe": 0.147, ...}` |
-| `compare_to_sector` | `ticker`, `metric`, `year` | Returns metric value vs sector median and percentile rank | `{"value": 28.4, "sector_median": 22.1, "percentile": 71}` |
-| `compute` | `expression` | Evaluates arithmetic expression, returns float | `{"result": 0.1847}` |
-| `submit_answer` | `answer` | Triggers grader, returns score breakdown | `{"score": 0.87, "breakdown": {...}}` |
+| Tool | Parameters | Returns |
+|------|-----------|---------|
+| `get_income_statement` | `ticker`, `year` | Revenue, COGS, gross profit, operating income, net income, EPS |
+| `get_balance_sheet` | `ticker`, `year` | Total assets, liabilities, equity, cash, total debt |
+| `get_cash_flow` | `ticker`, `year` | Operating CF, investing CF, financing CF, FCF, capex |
+| `get_price_history` | `ticker`, `years` | Annual open/close/high/low/avg_price per year |
+| `get_ratios` | `ticker`, `year` | P/E, P/B, EV/EBITDA, ROE, ROA, debt/equity, margins |
+| `compare_to_sector` | `ticker`, `metric`, `year` | Value vs sector median + percentile rank + above_median |
+| `compute` | `expression` | Safe arithmetic evaluation, returns float |
+| `submit_answer` | `answer` | Triggers grader, returns score breakdown |
 
-All financial figures are in millions USD unless otherwise noted. All data is synthetic but internally consistent across years and tickers.
+All monetary figures are in millions USD. Data is synthetic but internally consistent -- `FCF = operating_cf - capex`, `gross_profit = revenue - cogs`, `gross_margin = gross_profit / revenue` always hold.
+
+**Coverage:** 12 tickers (AAPL, MSFT, GOOGL, META, NVDA, TSLA, F, GM, JPM, BAC, AMZN, WMT) across 5 years (2019-2023) with 4 sectors (technology, automotive, banking, retail).
 
 ---
 
 ## Tasks
 
-### Task 1 -- Easy: Single-Metric Lookup with Computation
+### Task 1 -- Easy: Single-Metric Computation
 
-**Description:** Given a single company, compute a specific financial metric that requires fetching data and one calculation step.
+**Description:** Compute a standard financial metric for a single company. Requires 1-2 data fetches and one calculation step.
 
 **Example prompt:**
 > *"What was Apple's net profit margin for fiscal year 2022? Express as a percentage rounded to 2 decimal places."*
 
-**Expected trajectory:** `get_income_statement` -> `compute` -> `submit_answer` (3 steps)
+**Expected trajectory:** `get_income_statement` -> `compute` -> `submit_answer` (3 steps, max 10)
 
-**Difficulty rationale:** Single company, single year, formula is standard. Tests basic tool use and arithmetic.
+**Grader:**
+
+| Error range | Score |
+|---|---|
+| < 0.05% | 1.00 |
+| < 0.50% | 0.50 |
+| >= 0.50% | 0.00 |
 
 ---
 
 ### Task 2 -- Medium: Multi-Company Ratio Comparison
 
-**Description:** Compare a specific valuation ratio across 3 companies against their sector median.
+**Description:** Compare a valuation ratio across 3 companies against their sector median. Identify which is most attractive.
 
 **Example prompt:**
-> *"Among Microsoft, Google, and Meta, which company had the most favorable EV/EBITDA relative to the tech sector median in 2023? By how many points did it differ?"*
+> *"Among Microsoft, Google, and Meta, which had the most favorable EV/EBITDA relative to the tech sector median in 2023? By how many points did it differ?"*
 
-**Expected trajectory:** `get_ratios` x 3 -> `compare_to_sector` x 3 -> `compute` -> `submit_answer` (8 steps)
+**Expected trajectory:** `get_ratios` x3 -> `compare_to_sector` x3 -> `compute` -> `submit_answer` (~8 steps, max 20)
 
-**Difficulty rationale:** Requires coordinating data across multiple companies and understanding sector relative valuation.
+**Grader:**
+
+| Dimension | Weight |
+|---|---|
+| Correct company identified | 0.40 |
+| Correct sector delta (within 0.5) | 0.40 |
+| Efficiency bonus (steps <= 10) | 0.20 |
 
 ---
 
 ### Task 3 -- Hard: Multi-Year Anomaly Detection
 
-**Description:** Identify which company in a set had a specific anomalous pattern across 4 years of financial history, requiring cross-referencing cash flow and ratio data.
+**Description:** Identify anomalous financial patterns across 4 years for multiple companies, requiring cross-referencing cash flow and ratio data.
 
 **Example prompt:**
-> *"Among Tesla, Ford, and GM -- which company had negative free cash flow in at least 2 of the 4 fiscal years from 2020-2023, AND had a P/E ratio above 30 in any of those same years?"*
+> *"Among Tesla, Ford, and GM -- which had negative free cash flow in at least 2 of 4 fiscal years 2020-2023, AND had a P/E ratio above 30 in any of those years?"*
 
-**Expected trajectory:** `get_cash_flow` x 12 + `get_ratios` x 12 -> cross-reference -> `submit_answer` (25-30 steps)
+**Expected trajectory:** `get_cash_flow` x12 + `get_ratios` x12 -> cross-reference -> `submit_answer` (~28 steps, max 40)
 
-**Difficulty rationale:** Frontier models hallucinate intermediate values under multi-hop cross-referencing. GPT-4o baseline scores ~0.28 on this task.
+**Grader:**
+
+| Dimension | Weight |
+|---|---|
+| Correct companies identified | 0.30 |
+| Correct FCF-negative years (partial per company/year) | 0.30 |
+| Correct P/E > 30 years (partial per company/year) | 0.30 |
+| Efficiency bonus (steps <= 20) | 0.10 |
 
 ---
 
 ## Reward Function
 
-Rewards are dense -- issued at every step, not just at episode end.
+Dense rewards issued at every step.
 
-```
-Step-level rewards:
-  +0.05  Fetching data directly relevant to the task
-  +0.10  Correct intermediate computation via compute tool
-  -0.02  Fetching data not relevant to the task
-  -0.05  Calling submit_answer with no prior data fetches (blind guessing)
-  -0.01  Duplicate fetch (same ticker + year + tool called twice)
+| Signal | Reward | Condition |
+|--------|--------|-----------|
+| Relevant fetch | +0.05 | Fetched data the task requires |
+| Irrelevant fetch | -0.02 | Fetched data unrelated to task |
+| Duplicate fetch | -0.01 | Same tool + ticker + year called twice |
+| Correct intermediate | +0.10 | `compute` result matches expected value |
+| Blind submit | -0.05 | `submit_answer` with no prior data fetches |
+| Terminal (accuracy) | 0.0-0.70 | Scaled from grader score |
+| Efficiency bonus | +0.10 | Completed in <= 60% of max steps |
 
-Terminal rewards (on submit_answer):
-  +0.00 to +0.70  Scaled by grader accuracy score
-  +0.10           Efficiency bonus if completed in <= 60% of max steps
-  -0.10           Penalty if submitted without minimum required data fetches
-
-Episode total: sum of all step rewards + terminal reward, clipped to [0.0, 1.0]
-```
+Total episode reward clipped to `[0.0, 1.0]`.
 
 ---
 
 ## Baseline Scores
 
-Baseline agent: `gpt-4o-mini` via OpenAI API, zero-shot, no chain-of-thought.
+Baseline agent: `gpt-4o-mini`, zero-shot, no chain-of-thought.
 
-| Task | Difficulty | Baseline Score | Notes |
-|------|-----------|---------------|-------|
-| Net Profit Margin | Easy | 0.71 | Occasionally miscalculates from wrong revenue line |
-| Multi-Company EV/EBITDA | Medium | 0.44 | Frequently confuses sector delta direction |
-| Multi-Year FCF + P/E Anomaly | Hard | 0.28 | Hallucinates ~40% of intermediate values |
+| Task | Difficulty | Score | Notes |
+|------|-----------|-------|-------|
+| Single-Metric Computation | Easy | 0.71 | Occasionally miscalculates from wrong revenue line |
+| Multi-Company Ratio Comparison | Medium | 0.44 | Frequently confuses sector delta direction |
+| Multi-Year Anomaly Detection | Hard | 0.28 | Hallucinates ~40% of intermediate values |
+
+**Reproduce:**
+```bash
+export OPENAI_API_KEY=your_key
+python baseline.py
+```
 
 ---
 
 ## Setup & Usage
 
-### Local Development
+### Local
 
 ```bash
-# Clone the repo
 git clone https://github.com/ashutosh887/finquery
 cd finquery
-
-# Install dependencies
 pip install -e .
-
-# Run the server
 uvicorn server.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Use as Client (HTTP)
+### Docker
+
+```bash
+docker build -t finquery .
+docker run -p 8000:7860 finquery
+curl -X POST http://localhost:8000/reset
+```
+
+### Client Usage
 
 ```python
 from finquery import FinQueryEnv, FinQueryAction
 
 with FinQueryEnv(base_url="http://localhost:8000").sync() as env:
-    # Start an episode
     obs = env.reset(agent_name="my_agent")
-    print(obs.episode_id)              # unique episode ID
+    print(obs.episode_id)
     print(obs.observation.task_description)
 
-    # Fetch data
     result = env.step(FinQueryAction(
         action_type="get_income_statement",
         ticker="AAPL",
@@ -209,31 +234,26 @@ with FinQueryEnv(base_url="http://localhost:8000").sync() as env:
     ))
     print(result.reward)  # +0.05 for relevant fetch
 
-    # Submit answer
     result = env.step(FinQueryAction(
         action_type="submit_answer",
-        answer=25.31
+        answer=25.31,
+        reasoning="Net income / Revenue = 99803 / 394328 * 100"
     ))
     print(result.reward)  # terminal reward
     print(result.done)    # True
-
-    # Check leaderboard
-    print(env.leaderboard())
 ```
 
-### Use via WebSocket
+### WebSocket
 
 ```python
 import json, websockets, asyncio
 
 async def run():
     async with websockets.connect("ws://localhost:8000/ws") as ws:
-        # Reset
         await ws.send(json.dumps({"type": "reset", "task_id": "task1_easy"}))
         result = json.loads(await ws.recv())
         episode_id = result["episode_id"]
 
-        # Step
         await ws.send(json.dumps({
             "type": "step",
             "episode_id": episode_id,
@@ -245,13 +265,6 @@ async def run():
 asyncio.run(run())
 ```
 
-### Run Baseline
-
-```bash
-export OPENAI_API_KEY=your_key_here
-python baseline.py
-```
-
 ---
 
 ## Endpoints
@@ -261,7 +274,7 @@ python baseline.py
 | `/reset` | POST | Start new episode, returns `episode_id` + initial observation |
 | `/step` | POST | Take action (requires `episode_id`), returns observation + reward + done |
 | `/state` | GET | Episode metadata (query param: `episode_id`) |
-| `/tasks` | GET | List all tasks with action schema |
+| `/tasks` | GET | All tasks with action schema |
 | `/grader` | POST | Score an answer against ground truth |
 | `/baseline` | POST | Run baseline agent on all tasks |
 | `/history` | GET | Episode history (query params: `limit`, `task_id`) |
@@ -276,16 +289,17 @@ python baseline.py
 ```
 finquery/
 ├── finquery/
+│   ├── __init__.py
 │   ├── models.py              # FinQueryAction, FinQueryObservation, FinQueryState
 │   └── client.py              # FinQueryEnv HTTP client
 ├── server/
-│   ├── app.py                 # FastAPI app + all endpoints + WebSocket
+│   ├── app.py                 # FastAPI app + all endpoints + WebSocket + CORS
 │   ├── database.py            # SQLite persistence (episodes + leaderboard)
-│   ├── finquery_environment.py  # Core environment logic (concurrent episodes)
+│   ├── finquery_environment.py  # Core environment (concurrent episodes)
 │   ├── _baseline_runner.py    # OpenAI baseline agent
 │   ├── data/
-│   │   ├── financials.json    # Synthetic financial dataset (10 companies, 4 years)
-│   │   └── sectors.json       # Sector median benchmarks
+│   │   ├── financials.json    # Synthetic dataset — 12 tickers, 5 years
+│   │   └── sectors.json       # Sector median benchmarks (4 sectors)
 │   ├── tools/
 │   │   ├── income_statement.py
 │   │   ├── balance_sheet.py
@@ -299,11 +313,38 @@ finquery/
 │   │   └── task3_grader.py
 │   └── rewards/
 │       └── reward_engine.py   # Dense per-step reward computation
+├── scripts/
+│   └── validate_data.py       # Data consistency checker
 ├── baseline.py                # CLI baseline runner
+├── Dockerfile                 # HF Spaces deployment (port 7860)
 ├── openenv.yaml               # OpenEnv manifest
 ├── pyproject.toml
 └── README.md
 ```
+
+---
+
+## Data Schema
+
+Each ticker/year entry in `financials.json` contains:
+
+```json
+{
+  "income_statement": { "revenue", "cogs", "gross_profit", "operating_income", "net_income", "eps" },
+  "balance_sheet": { "total_assets", "total_liabilities", "total_equity", "cash", "total_debt" },
+  "cash_flow": { "operating_cf", "investing_cf", "financing_cf", "fcf", "capex" },
+  "price": { "open", "close", "high", "low", "avg_price" },
+  "shares_outstanding": int,
+  "ratios": { "pe_ratio", "pb_ratio", "ev_ebitda", "roe", "roa", "debt_equity", "current_ratio", "gross_margin", "net_margin", "fcf_margin" }
+}
+```
+
+**Invariants enforced by `scripts/validate_data.py`:**
+- `gross_profit = revenue - cogs`
+- `total_assets = total_liabilities + total_equity`
+- `fcf = operating_cf - capex`
+- `gross_margin = gross_profit / revenue` (within 0.001)
+- `net_margin = net_income / revenue` (within 0.001)
 
 ---
 

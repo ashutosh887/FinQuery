@@ -1,6 +1,8 @@
 # CLAUDE.md -- FinQuery
 
-This file tells Claude Code how to work in this repo.
+> An OpenEnv-compatible RL environment simulating a financial data terminal for training agents on multi-step analytical reasoning.
+
+This file tells Claude Code exactly how to work in this repo. Read it fully before touching any file.
 
 ---
 
@@ -8,62 +10,94 @@ This file tells Claude Code how to work in this repo.
 
 FinQuery is an OpenEnv-compatible RL environment. It simulates a financial data terminal where an LLM agent must fetch data via tools, reason across multiple steps, and submit verified financial answers.
 
-The environment is a **FastAPI server** exposed via HTTP and WebSocket endpoints following the OpenEnv spec.
+The environment is a **FastAPI server**, exposed via WebSocket and HTTP endpoints following the OpenEnv spec. Episode state is persisted via SQLite through `server/database.py`.
 
 ---
 
-## Project Structure
+## Actual Project Structure
 
 ```
 finquery/
+├── baseline.py                    # OpenAI API baseline runner -- must stay runnable
+├── CLAUDE.md                      # This file
+├── openenv.yaml                   # Manifest -- keep in sync with models.py
+├── pyproject.toml                 # Dependencies
+├── Dockerfile                     # HF Spaces deployment (port 7860)
+├── LICENSE
+├── README.md
 ├── finquery/
-│   ├── __init__.py              # Package exports
-│   ├── models.py                # ALL Pydantic models live here. Edit this first.
-│   └── client.py                # HTTP client. Mirrors models.py types.
+│   ├── __init__.py                # Exports FinQueryEnv, FinQueryAction, FinQueryObservation, FinQueryState
+│   ├── client.py                  # FinQueryEnv HTTP client -- no server imports
+│   └── models.py                  # ALL Pydantic models -- edit this first, then propagate
 ├── server/
-│   ├── app.py                   # FastAPI app. All routes + WebSocket + CORS.
-│   ├── database.py              # SQLite persistence (episodes + leaderboard).
-│   ├── finquery_environment.py  # Core logic: reset(), step(), state(). Concurrent episodes.
-│   ├── _baseline_runner.py      # OpenAI baseline agent
+│   ├── __init__.py
+│   ├── app.py                     # FastAPI app -- all routes + WebSocket + CORS
+│   ├── finquery_environment.py    # Core: reset(), step(), state() -- concurrent episodes
+│   ├── database.py                # SQLite -- episode/leaderboard persistence
+│   ├── _baseline_runner.py        # Called internally by /baseline endpoint
 │   ├── data/
-│   │   ├── financials.json      # SOURCE OF TRUTH for all financial data
-│   │   └── sectors.json         # SOURCE OF TRUTH for sector medians
-│   ├── tools/                   # One file per tool. Pure functions, no state.
-│   ├── graders/                 # One file per task. Deterministic. No LLM calls.
+│   │   ├── financials.json        # SOURCE OF TRUTH -- 12 tickers, 5 years, never fetch externally
+│   │   └── sectors.json           # SOURCE OF TRUTH -- 4 sector median benchmarks
+│   ├── tools/
+│   │   ├── __init__.py
+│   │   ├── income_statement.py
+│   │   ├── balance_sheet.py
+│   │   ├── cash_flow.py
+│   │   ├── price_history.py
+│   │   ├── ratios.py
+│   │   └── sector_compare.py
+│   ├── graders/
+│   │   ├── __init__.py
+│   │   ├── task1_grader.py        # Deterministic -- no LLM calls ever
+│   │   ├── task2_grader.py
+│   │   └── task3_grader.py
 │   └── rewards/
-│       └── reward_engine.py     # Dense per-step reward logic
-├── baseline.py                  # OpenAI API baseline runner. Must stay runnable.
-├── openenv.yaml                 # Manifest. Keep in sync with models.py.
-└── pyproject.toml               # Dependencies.
+│       ├── __init__.py
+│       └── reward_engine.py       # Per-step reward logic -- separate from graders
+└── scripts/
+    └── validate_data.py           # Data consistency checker
 ```
 
 ---
 
 ## Critical Rules
 
-### Data is synthetic and fixed
-`server/data/financials.json` and `server/data/sectors.json` are the single source of truth. **Never** make external API calls (Yahoo Finance, Alpha Vantage, etc.) at runtime. All data is pre-built and deterministic. If you add a new ticker or year, add it to the JSON files first.
+### 1. Data is synthetic and fixed
+`server/data/financials.json` and `server/data/sectors.json` are the single source of truth. **Never** make external API calls (Yahoo Finance, Alpha Vantage, any financial API) at runtime. If a ticker or year is missing from the JSON, return an error -- do not fetch it live.
 
-### Graders must be deterministic
-Graders in `server/graders/` must never call an LLM for scoring. All scoring is pure math against ground truth values from `financials.json`.
+### 2. Graders must be deterministic -- no LLM calls
+Files in `server/graders/` score against ground truth from `financials.json` using pure math. If you find yourself writing `openai.` anywhere in a grader file, stop -- that is wrong. Graders must return the same score for the same input every single time.
 
-### Reward engine is separate from graders
-- `reward_engine.py` handles **per-step** rewards (relevance of tool calls, intermediate computation correctness, efficiency)
-- `graders/` handle **terminal** rewards (accuracy of final submitted answer)
-- Never mix these. The grader only runs when `action_type == "submit_answer"`.
+### 3. Reward engine is separate from graders
+- `server/rewards/reward_engine.py` -- **per-step** rewards (tool relevance, duplicate detection, intermediate computation)
+- `server/graders/` -- **terminal** rewards (final answer accuracy, called only on `submit_answer`)
 
-### Models.py is the contract
-`FinQueryAction`, `FinQueryObservation`, and `FinQueryState` in `models.py` define the API contract. If you change a field:
-1. Update `models.py`
-2. Update `client.py` to match
-3. Update `openenv.yaml` if the action schema changed
-4. Update `README.md` Action/Observation Space section
+Never mix these. Grader only runs when `action_type == "submit_answer"`.
 
-### All tools are pure functions
-Files in `server/tools/` take `(ticker: str, year: int, data: dict)` and return a dict. They do not read from disk themselves -- the environment passes the pre-loaded data dict to them.
+### 4. models.py is the API contract
+`FinQueryAction`, `FinQueryObservation`, `FinQueryState` define everything. If you change any field:
+1. Update `finquery/models.py`
+2. Update `finquery/client.py` to match
+3. Update `openenv.yaml` if action schema changed
+4. Update README.md Action/Observation Space section
 
-### Episodes use episode_id for concurrency
-The environment supports concurrent episodes. `/reset` returns an `episode_id` and `/step` requires one. Do not use a single shared episode -- always pass the episode_id.
+### 5. Tools are pure functions
+Files in `server/tools/` receive `(ticker, year, data_dict)` and return a dict. They do not read from disk themselves -- the environment passes pre-loaded data to them. No global state. No side effects.
+
+### 6. client.py cannot import from server/
+The client ships as a standalone package. It cannot depend on server code. If you need a shared type, it lives in `finquery/models.py` only.
+
+### 7. step() never raises
+All invalid actions must return an observation with `tool_error` set, `reward=0`, and `done=False`. Never let `step()` propagate an unhandled exception to the caller.
+
+### 8. state() is read-only
+`state()` returns current `FinQueryState` and never modifies episode state.
+
+### 9. Episodes use episode_id for concurrency
+The environment supports concurrent episodes. `/reset` returns an `episode_id` and `/step` requires one. Finished episodes are cleaned from memory and persisted to SQLite.
+
+### 10. Port is 7860 for HuggingFace
+The Dockerfile binds to port 7860 (HF Spaces requirement). Local dev runs on 8000.
 
 ---
 
@@ -73,8 +107,11 @@ The environment supports concurrent episodes. `/reset` returns an `episode_id` a
 # Install
 pip install -e .
 
-# Run server
+# Run server on 8000 for local dev
 uvicorn server.app:app --host 0.0.0.0 --port 8000 --reload
+
+# Validate data
+python scripts/validate_data.py
 
 # Validate OpenEnv spec
 openenv validate
@@ -82,43 +119,100 @@ openenv validate
 
 ---
 
-## Required Endpoints
+## Docker
 
-All 10 must return correct responses:
+```bash
+docker build -t finquery .
+docker run -p 8000:7860 finquery
 
-| Endpoint | Method | What it must do |
-|---|---|---|
-| `/reset` | POST | Returns `episode_id` + `FinQueryObservation` with task_description populated |
-| `/step` | POST | Accepts `episode_id` + `FinQueryAction`, returns observation + reward + done |
-| `/state` | GET | Returns `FinQueryState` for an episode (query param: `episode_id`) |
-| `/tasks` | GET | Returns list of all 3 tasks with their action schema |
-| `/grader` | POST | Accepts task_id + answer, returns score breakdown |
-| `/baseline` | POST | Runs baseline agent on all 3 tasks, returns scores |
-| `/history` | GET | Returns recent episode history from SQLite |
-| `/leaderboard` | GET | Returns top scores grouped by agent + task |
-| `/health` | GET | Returns `{"status": "healthy"}` |
-| `/ws` | WebSocket | Real-time reset/step/state over a single connection |
+# Smoke test
+curl -X POST http://localhost:8000/reset
+curl http://localhost:8000/tasks
+```
 
 ---
 
-## Database
+## Baseline Script
 
-SQLite at `server/data/finquery.db` (auto-created on first startup, gitignored).
+`baseline.py` must:
+- Read `OPENAI_API_KEY` from environment only -- never hardcode
+- Run all 3 tasks sequentially
+- Exit code 0 on success, non-zero on any error
+- Complete within 5 minutes total
 
-Tables:
-- `episodes` -- one row per episode (episode_id, task_id, agent_name, score, status, timestamps)
-- `leaderboard` -- one row per completed episode (agent_name, task_id, score, steps)
+---
 
-The DB is managed by `server/database.py`. `init_db()` is called in the FastAPI lifespan handler.
+## Required Endpoints -- All Must Return 200
+
+| Endpoint | Method | What it must return |
+|---|---|---|
+| `/reset` | POST | `episode_id` + `FinQueryObservation` with `task_description` populated |
+| `/step` | POST | Requires `episode_id` + `FinQueryAction`, returns observation + reward + done |
+| `/state` | GET | `FinQueryState` for an episode (query param: `episode_id`) |
+| `/tasks` | GET | List of 3 tasks with `id`, `name`, `difficulty`, `action_schema` |
+| `/grader` | POST | Score breakdown dict with `score` in `[0,1]` |
+| `/baseline` | POST | Runs baseline agent, returns scores |
+| `/history` | GET | Episode history from SQLite |
+| `/leaderboard` | GET | Top scores grouped by agent + task |
+| `/health` | GET | `{"status": "healthy"}` |
+| `/ws` | WebSocket | Real-time reset/step/state over persistent connection |
+
+---
+
+## financials.json Schema
+
+Each ticker/year entry contains:
+
+```json
+{
+  "income_statement": { "revenue", "cogs", "gross_profit", "operating_income", "net_income", "eps" },
+  "balance_sheet": { "total_assets", "total_liabilities", "total_equity", "cash", "total_debt" },
+  "cash_flow": { "operating_cf", "investing_cf", "financing_cf", "fcf", "capex" },
+  "price": { "open", "close", "high", "low", "avg_price" },
+  "shares_outstanding": int,
+  "ratios": { "pe_ratio", "pb_ratio", "ev_ebitda", "roe", "roa", "debt_equity", "current_ratio", "gross_margin", "net_margin", "fcf_margin" }
+}
+```
+
+**Invariants (enforced by `scripts/validate_data.py`):**
+- `gross_profit = revenue - cogs`
+- `total_assets = total_liabilities + total_equity`
+- `fcf = operating_cf - capex`
+- `gross_margin = gross_profit / revenue` (within 0.001)
+- `net_margin = net_income / revenue` (within 0.001)
+
+---
+
+## Reward Constants
+
+```python
+RELEVANT_FETCH_REWARD    = +0.05
+IRRELEVANT_FETCH_PENALTY = -0.02
+DUPLICATE_FETCH_PENALTY  = -0.01
+CORRECT_COMPUTE_REWARD   = +0.10
+BLIND_SUBMIT_PENALTY     = -0.05
+MAX_TERMINAL_REWARD      =  0.70
+EFFICIENCY_BONUS         = +0.10
+EFFICIENCY_THRESHOLD     =  0.60   # steps_taken / max_steps must be <= this
+```
 
 ---
 
 ## Common Mistakes to Avoid
 
-1. **Do not add LLM calls to graders.** Graders must be pure functions.
-2. **Do not import from `server/` in `client.py`.** The client ships separately.
-3. **Do not hardcode ticker lists in environment logic.** Load from `financials.json` keys dynamically.
-4. **Do not reset episode state in `state()`.** `state()` is read-only.
-5. **Do not let `step()` raise unhandled exceptions.** All invalid actions must return an observation with `tool_error` set, reward of 0, and `done=False`.
-6. **Do not change max_steps without updating `openenv.yaml`.** They must match.
-7. **Do not use a single shared episode.** Always pass `episode_id` to `step()` and `state()`.
+1. **LLM calls in graders.** Never.
+2. **Importing `server/` code in `finquery/client.py`.** Never.
+3. **Hardcoding ticker lists in environment logic.** Load from `financials.json` keys dynamically.
+4. **Using `eval()` in the compute tool.** Use a safe AST-based math parser.
+5. **Letting `step()` raise.** All errors -> `tool_error` in observation, `reward=0`, `done=False`.
+6. **Changing `max_steps` without updating `openenv.yaml`.** They must match.
+
+---
+
+## Pre-Submission Checklist
+
+```bash
+python scripts/validate_data.py && echo "Data OK"
+openenv validate && echo "OpenEnv OK"
+docker build -t finquery . && echo "Docker OK"
+```
