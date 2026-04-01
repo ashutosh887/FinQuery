@@ -30,7 +30,19 @@
         "low": 53.15,
         "avg_price": 95.97
       },
-      "shares_outstanding": 17001
+      "shares_outstanding": 17001,
+      "ratios": {
+        "pe_ratio": 29.26,
+        "pb_ratio": 24.97,
+        "ev_ebitda": 25.74,
+        "roe": 0.8787,
+        "roa": 0.1773,
+        "debt_equity": 1.7208,
+        "current_ratio": 0.844,
+        "gross_margin": 0.3823,
+        "net_margin": 0.2091,
+        "fcf_margin": 0.2673
+      }
     },
     "2021": {
       "income_statement": {
@@ -62,7 +74,19 @@
         "low": 116.21,
         "avg_price": 149.58
       },
-      "shares_outstanding": 16865
+      "shares_outstanding": 16865,
+      "ratios": {
+        "pe_ratio": 26.66,
+        "pb_ratio": 39.99,
+        "ev_ebitda": 23.98,
+        "roe": 1.5007,
+        "roa": 0.2697,
+        "debt_equity": 1.9768,
+        "current_ratio": 0.828,
+        "gross_margin": 0.4178,
+        "net_margin": 0.2588,
+        "fcf_margin": 0.2541
+      }
     },
     "2022": {
       "income_statement": {
@@ -94,7 +118,19 @@
         "low": 124.17,
         "avg_price": 150.09
       },
-      "shares_outstanding": 16326
+      "shares_outstanding": 16326,
+      "ratios": {
+        "pe_ratio": 24.56,
+        "pb_ratio": 48.52,
+        "ev_ebitda": 21.32,
+        "roe": 1.9763,
+        "roa": 0.2831,
+        "debt_equity": 2.3776,
+        "current_ratio": 0.696,
+        "gross_margin": 0.4331,
+        "net_margin": 0.2531,
+        "fcf_margin": 0.2826
+      }
     },
     "2023": {
       "income_statement": {
@@ -124,9 +160,65 @@
         "close": 192.53,
         "high": 199.62,
         "low": 124.17,
-        "avg_price": 161.40
+        "avg_price": 161.4
       },
-      "shares_outstanding": 15813
+      "shares_outstanding": 15813,
+      "ratios": {
+        "pe_ratio": 26.33,
+        "pb_ratio": 41.07,
+        "ev_ebitda": 23.04,
+        "roe": 1.5608,
+        "roa": 0.2751,
+        "debt_equity": 1.7875,
+        "current_ratio": 0.784,
+        "gross_margin": 0.4413,
+        "net_margin": 0.2531,
+        "fcf_margin": 0.2598
+      }
+    },
+    "2019": {
+      "income_statement": {
+        "revenue": 260174,
+        "cogs": 161782,
+        "gross_profit": 98392,
+        "operating_income": 63930,
+        "net_income": 55256,
+        "eps": 2.97
+      },
+      "balance_sheet": {
+        "total_assets": 338516,
+        "total_liabilities": 248028,
+        "total_equity": 90488,
+        "cash": 48844,
+        "total_debt": 108047
+      },
+      "cash_flow": {
+        "operating_cf": 69391,
+        "investing_cf": -45896,
+        "financing_cf": -90976,
+        "fcf": 58896,
+        "capex": 10495
+      },
+      "price": {
+        "open": 38.72,
+        "close": 73.41,
+        "high": 75.15,
+        "low": 35.55,
+        "avg_price": 55.28
+      },
+      "shares_outstanding": 18596,
+      "ratios": {
+        "pe_ratio": 18.61,
+        "pb_ratio": 11.36,
+        "ev_ebitda": 17.01,
+        "roe": 0.6106,
+        "roa": 0.1632,
+        "debt_equity": 1.194,
+        "current_ratio": 1.006,
+        "gross_margin": 0.3782,
+        "net_margin": 0.2124,
+        "fcf_margin": 0.2264
+      }
     }
   },
   "MSFT": {
@@ -160,7 +252,19 @@
         "low": 132.52,
         "avg_price": 182.69
       },
-      "shares_outstanding": 7571
+      "shares_outstanding": 7571,
+      "ratios": {
+        "pe_ratio": 31.72,
+        "pb_ratio": 11.69,
+        "ev_ebitda": 27.06,
+        "roe": 0.3743,
+        "roa": 0.147,
+        "debt_equity": 0.5353,
+        "current_ratio": 0.508,
+        "gross_margin": 0.6778,
+        "net_margin": 0.3096,
+        "fcf_margin": 0.3163
+      }
     },
     "2021": {
       "income_statement": {
@@ -192,7 +296,19 @@
         "low": 211.94,
         "avg_price": 280.81
       },
-      "shares_outstanding": 7547
+      "shares_outstanding": 7547,
+      "ratios": {
+        "pe_ratio": 34.88,
+        "pb_ratio": 14.93,
+        "ev_ebitda": 31.08,
+        "roe": 0.4315,
+        "roa": 0.1836,
+        "debt_equity": 0.4773,
+        "current_ratio": 0.539,
+        "gross_margin": 0.6893,
+        "net_margin": 0.3645,
+        "fcf_margin": 0.3339
+      }
     },
     "2022": {
       "income_statement": {
@@ -224,7 +340,19 @@
         "low": 213.43,
         "avg_price": 276.55
       },
-      "shares_outstanding": 7496
+      "shares_outstanding": 7496,
+      "ratios": {
+        "pe_ratio": 28.66,
+        "pb_ratio": 12.45,
+        "ev_ebitda": 25.43,
+        "roe": 0.4368,
+        "roa": 0.1994,
+        "debt_equity": 0.3679,
+        "current_ratio": 0.567,
+        "gross_margin": 0.684,
+        "net_margin": 0.3669,
+        "fcf_margin": 0.3194
+      }
     },
     "2023": {
       "income_statement": {
@@ -252,11 +380,67 @@
       "price": {
         "open": 243.08,
         "close": 376.04,
-        "high": 384.30,
+        "high": 384.3,
         "low": 219.35,
         "avg_price": 309.69
       },
-      "shares_outstanding": 7432
+      "shares_outstanding": 7432,
+      "ratios": {
+        "pe_ratio": 31.99,
+        "pb_ratio": 11.16,
+        "ev_ebitda": 26.29,
+        "roe": 0.3509,
+        "roa": 0.1756,
+        "debt_equity": 0.2908,
+        "current_ratio": 0.906,
+        "gross_margin": 0.6892,
+        "net_margin": 0.3415,
+        "fcf_margin": 0.2807
+      }
+    },
+    "2019": {
+      "income_statement": {
+        "revenue": 125843,
+        "cogs": 42910,
+        "gross_profit": 82933,
+        "operating_income": 42959,
+        "net_income": 39240,
+        "eps": 5.06
+      },
+      "balance_sheet": {
+        "total_assets": 286556,
+        "total_liabilities": 184226,
+        "total_equity": 102330,
+        "cash": 11356,
+        "total_debt": 78366
+      },
+      "cash_flow": {
+        "operating_cf": 52185,
+        "investing_cf": -15773,
+        "financing_cf": -36887,
+        "fcf": 38260,
+        "capex": 13925
+      },
+      "price": {
+        "open": 101.12,
+        "close": 157.7,
+        "high": 159.56,
+        "low": 97.2,
+        "avg_price": 130.36
+      },
+      "shares_outstanding": 7753,
+      "ratios": {
+        "pe_ratio": 25.76,
+        "pb_ratio": 9.88,
+        "ev_ebitda": 25.09,
+        "roe": 0.3835,
+        "roa": 0.1369,
+        "debt_equity": 0.7658,
+        "current_ratio": 0.433,
+        "gross_margin": 0.659,
+        "net_margin": 0.3118,
+        "fcf_margin": 0.304
+      }
     }
   },
   "GOOGL": {
@@ -290,7 +474,19 @@
         "low": 50.44,
         "avg_price": 71.01
       },
-      "shares_outstanding": 13504
+      "shares_outstanding": 13504,
+      "ratios": {
+        "pe_ratio": 24.24,
+        "pb_ratio": 4.31,
+        "ev_ebitda": 23.27,
+        "roe": 0.1809,
+        "roa": 0.126,
+        "debt_equity": 0.1203,
+        "current_ratio": 1.536,
+        "gross_margin": 0.5358,
+        "net_margin": 0.2206,
+        "fcf_margin": 0.2347
+      }
     },
     "2021": {
       "income_statement": {
@@ -322,7 +518,19 @@
         "low": 83.41,
         "avg_price": 117.49
       },
-      "shares_outstanding": 13242
+      "shares_outstanding": 13242,
+      "ratios": {
+        "pe_ratio": 20.94,
+        "pb_ratio": 6.18,
+        "ev_ebitda": 19.83,
+        "roe": 0.3022,
+        "roa": 0.2116,
+        "debt_equity": 0.1041,
+        "current_ratio": 1.447,
+        "gross_margin": 0.5694,
+        "net_margin": 0.2951,
+        "fcf_margin": 0.2601
+      }
     },
     "2022": {
       "income_statement": {
@@ -354,7 +562,19 @@
         "low": 83.34,
         "avg_price": 111.45
       },
-      "shares_outstanding": 13044
+      "shares_outstanding": 13044,
+      "ratios": {
+        "pe_ratio": 24.44,
+        "pb_ratio": 5.68,
+        "ev_ebitda": 19.49,
+        "roe": 0.2341,
+        "roa": 0.1642,
+        "debt_equity": 0.1035,
+        "current_ratio": 1.532,
+        "gross_margin": 0.5538,
+        "net_margin": 0.212,
+        "fcf_margin": 0.2122
+      }
     },
     "2023": {
       "income_statement": {
@@ -363,7 +583,7 @@
         "gross_profit": 174062,
         "operating_income": 84293,
         "net_income": 73795,
-        "eps": 5.80
+        "eps": 5.8
       },
       "balance_sheet": {
         "total_assets": 402392,
@@ -380,13 +600,69 @@
         "capex": 32251
       },
       "price": {
-        "open": 89.70,
+        "open": 89.7,
         "close": 140.93,
         "high": 143.38,
         "low": 83.45,
         "avg_price": 115.04
       },
-      "shares_outstanding": 12723
+      "shares_outstanding": 12723,
+      "ratios": {
+        "pe_ratio": 19.83,
+        "pb_ratio": 5.17,
+        "ev_ebitda": 17.34,
+        "roe": 0.2604,
+        "roa": 0.1834,
+        "debt_equity": 0.1006,
+        "current_ratio": 1.721,
+        "gross_margin": 0.5663,
+        "net_margin": 0.2401,
+        "fcf_margin": 0.2261
+      }
+    },
+    "2019": {
+      "income_statement": {
+        "revenue": 161857,
+        "cogs": 71896,
+        "gross_profit": 89961,
+        "operating_income": 34231,
+        "net_income": 34343,
+        "eps": 49.16
+      },
+      "balance_sheet": {
+        "total_assets": 275909,
+        "total_liabilities": 74467,
+        "total_equity": 201442,
+        "cash": 18498,
+        "total_debt": 14768
+      },
+      "cash_flow": {
+        "operating_cf": 54520,
+        "investing_cf": -32773,
+        "financing_cf": -24404,
+        "fcf": 30972,
+        "capex": 23548
+      },
+      "price": {
+        "open": 52.36,
+        "close": 67.07,
+        "high": 68.24,
+        "low": 49.79,
+        "avg_price": 58.92
+      },
+      "shares_outstanding": 699,
+      "ratios": {
+        "pe_ratio": 1.2,
+        "pb_ratio": 0.2,
+        "ev_ebitda": 1.09,
+        "roe": 0.1705,
+        "roa": 0.1245,
+        "debt_equity": 0.0733,
+        "current_ratio": 1.553,
+        "gross_margin": 0.5558,
+        "net_margin": 0.2122,
+        "fcf_margin": 0.1914
+      }
     }
   },
   "META": {
@@ -417,10 +693,22 @@
         "open": 206.75,
         "close": 273.16,
         "high": 304.67,
-        "low": 137.10,
+        "low": 137.1,
         "avg_price": 220.89
       },
-      "shares_outstanding": 2850
+      "shares_outstanding": 2850,
+      "ratios": {
+        "pe_ratio": 21.89,
+        "pb_ratio": 4.91,
+        "ev_ebitda": 19.06,
+        "roe": 0.2272,
+        "roa": 0.1829,
+        "debt_equity": 0.083,
+        "current_ratio": 2.812,
+        "gross_margin": 0.8058,
+        "net_margin": 0.339,
+        "fcf_margin": 0.2749
+      }
     },
     "2021": {
       "income_statement": {
@@ -452,7 +740,19 @@
         "low": 245.64,
         "avg_price": 314.99
       },
-      "shares_outstanding": 2772
+      "shares_outstanding": 2772,
+      "ratios": {
+        "pe_ratio": 22.88,
+        "pb_ratio": 6.89,
+        "ev_ebitda": 18.6,
+        "roe": 0.3106,
+        "roa": 0.2372,
+        "debt_equity": 0.1019,
+        "current_ratio": 2.413,
+        "gross_margin": 0.8079,
+        "net_margin": 0.3338,
+        "fcf_margin": 0.3317
+      }
     },
     "2022": {
       "income_statement": {
@@ -480,11 +780,23 @@
       "price": {
         "open": 338.23,
         "close": 120.34,
-        "high": 351.70,
+        "high": 351.7,
         "low": 88.09,
-        "avg_price": 175.90
+        "avg_price": 175.9
       },
-      "shares_outstanding": 2687
+      "shares_outstanding": 2687,
+      "ratios": {
+        "pe_ratio": 20.48,
+        "pb_ratio": 4.17,
+        "ev_ebitda": 16.51,
+        "roe": 0.2045,
+        "roa": 0.1398,
+        "debt_equity": 0.1751,
+        "current_ratio": 1.671,
+        "gross_margin": 0.7835,
+        "net_margin": 0.199,
+        "fcf_margin": 0.1624
+      }
     },
     "2023": {
       "income_statement": {
@@ -512,11 +824,67 @@
       "price": {
         "open": 124.74,
         "close": 353.96,
-        "high": 361.90,
+        "high": 361.9,
         "low": 117.28,
         "avg_price": 239.32
       },
-      "shares_outstanding": 2560
+      "shares_outstanding": 2560,
+      "ratios": {
+        "pe_ratio": 16.09,
+        "pb_ratio": 4.55,
+        "ev_ebitda": 12.83,
+        "roe": 0.2904,
+        "roa": 0.1984,
+        "debt_equity": 0.2141,
+        "current_ratio": 2.955,
+        "gross_margin": 0.8125,
+        "net_margin": 0.2898,
+        "fcf_margin": 0.3251
+      }
+    },
+    "2019": {
+      "income_statement": {
+        "revenue": 70697,
+        "cogs": 12770,
+        "gross_profit": 57927,
+        "operating_income": 23986,
+        "net_income": 18485,
+        "eps": 6.43
+      },
+      "balance_sheet": {
+        "total_assets": 133376,
+        "total_liabilities": 32322,
+        "total_equity": 101054,
+        "cash": 19079,
+        "total_debt": 10322
+      },
+      "cash_flow": {
+        "operating_cf": 36314,
+        "investing_cf": -19864,
+        "financing_cf": -8677,
+        "fcf": 21212,
+        "capex": 15102
+      },
+      "price": {
+        "open": 131.09,
+        "close": 205.25,
+        "high": 208.66,
+        "low": 123.02,
+        "avg_price": 168.18
+      },
+      "shares_outstanding": 2874,
+      "ratios": {
+        "pe_ratio": 26.16,
+        "pb_ratio": 4.78,
+        "ev_ebitda": 19.79,
+        "roe": 0.1829,
+        "roa": 0.1386,
+        "debt_equity": 0.1021,
+        "current_ratio": 2.697,
+        "gross_margin": 0.8194,
+        "net_margin": 0.2615,
+        "fcf_margin": 0.3
+      }
     }
   },
   "AMZN": {
@@ -547,10 +915,22 @@
         "open": 93.75,
         "close": 162.85,
         "high": 170.48,
-        "low": 81.30,
+        "low": 81.3,
         "avg_price": 127.08
       },
-      "shares_outstanding": 10073
+      "shares_outstanding": 10073,
+      "ratios": {
+        "pe_ratio": 60.8,
+        "pb_ratio": 13.7,
+        "ev_ebitda": 57.75,
+        "roe": 0.2284,
+        "roa": 0.0664,
+        "debt_equity": 0.9035,
+        "current_ratio": 1.181,
+        "gross_margin": 0.3957,
+        "net_margin": 0.0553,
+        "fcf_margin": 0.0671
+      }
     },
     "2021": {
       "income_statement": {
@@ -582,7 +962,19 @@
         "low": 148.97,
         "avg_price": 168.81
       },
-      "shares_outstanding": 10117
+      "shares_outstanding": 10117,
+      "ratios": {
+        "pe_ratio": 52.1,
+        "pb_ratio": 12.35,
+        "ev_ebitda": 71.87,
+        "roe": 0.2413,
+        "roa": 0.0793,
+        "debt_equity": 0.8419,
+        "current_ratio": 0.982,
+        "gross_margin": 0.4203,
+        "net_margin": 0.071,
+        "fcf_margin": -0.0307
+      }
     },
     "2022": {
       "income_statement": {
@@ -608,13 +1000,25 @@
         "capex": 63278
       },
       "price": {
-        "open": 170.40,
-        "close": 84.00,
+        "open": 170.4,
+        "close": 84.0,
         "high": 188.11,
         "low": 81.43,
         "avg_price": 128.77
       },
-      "shares_outstanding": 10189
+      "shares_outstanding": 10189,
+      "ratios": {
+        "pe_ratio": null,
+        "pb_ratio": 8.98,
+        "ev_ebitda": 114.23,
+        "roe": -0.0186,
+        "roa": -0.0059,
+        "debt_equity": 0.9653,
+        "current_ratio": 1.108,
+        "gross_margin": 0.4381,
+        "net_margin": -0.0053,
+        "fcf_margin": -0.0322
+      }
     },
     "2023": {
       "income_statement": {
@@ -623,7 +1027,7 @@
         "gross_profit": 270046,
         "operating_income": 36852,
         "net_income": 30425,
-        "eps": 2.90
+        "eps": 2.9
       },
       "balance_sheet": {
         "total_assets": 527854,
@@ -646,7 +1050,63 @@
         "low": 81.43,
         "avg_price": 118.53
       },
-      "shares_outstanding": 10304
+      "shares_outstanding": 10304,
+      "ratios": {
+        "pe_ratio": 40.87,
+        "pb_ratio": 6.87,
+        "ev_ebitda": 34.87,
+        "roe": 0.1712,
+        "roa": 0.0576,
+        "debt_equity": 0.7708,
+        "current_ratio": 1.246,
+        "gross_margin": 0.4698,
+        "net_margin": 0.0529,
+        "fcf_margin": 0.056
+      }
+    },
+    "2019": {
+      "income_statement": {
+        "revenue": 280522,
+        "cogs": 165536,
+        "gross_profit": 114986,
+        "operating_income": 14541,
+        "net_income": 11588,
+        "eps": 23.01
+      },
+      "balance_sheet": {
+        "total_assets": 225248,
+        "total_liabilities": 163188,
+        "total_equity": 62060,
+        "cash": 36092,
+        "total_debt": 63205
+      },
+      "cash_flow": {
+        "operating_cf": 38514,
+        "investing_cf": -24281,
+        "financing_cf": -10066,
+        "fcf": 21653,
+        "capex": 16861
+      },
+      "price": {
+        "open": 80.17,
+        "close": 92.7,
+        "high": 101.0,
+        "low": 74.8,
+        "avg_price": 88.85
+      },
+      "shares_outstanding": 504,
+      "ratios": {
+        "pe_ratio": 3.86,
+        "pb_ratio": 0.72,
+        "ev_ebitda": 4.94,
+        "roe": 0.1867,
+        "roa": 0.0514,
+        "debt_equity": 1.0184,
+        "current_ratio": 1.31,
+        "gross_margin": 0.4099,
+        "net_margin": 0.0413,
+        "fcf_margin": 0.0772
+      }
     }
   },
   "NVDA": {
@@ -680,7 +1140,19 @@
         "low": 45.16,
         "avg_price": 93.62
       },
-      "shares_outstanding": 2480
+      "shares_outstanding": 2480,
+      "ratios": {
+        "pe_ratio": 54.12,
+        "pb_ratio": 14.89,
+        "ev_ebitda": 52.72,
+        "roe": 0.2778,
+        "roa": 0.1505,
+        "debt_equity": 0.4872,
+        "current_ratio": 0.635,
+        "gross_margin": 0.6234,
+        "net_margin": 0.2598,
+        "fcf_margin": 0.3246
+      }
     },
     "2021": {
       "income_statement": {
@@ -712,7 +1184,19 @@
         "low": 115.67,
         "avg_price": 223.57
       },
-      "shares_outstanding": 2490
+      "shares_outstanding": 2490,
+      "ratios": {
+        "pe_ratio": 57.18,
+        "pb_ratio": 25.97,
+        "ev_ebitda": 56.52,
+        "roe": 0.4549,
+        "roa": 0.2207,
+        "debt_equity": 0.5641,
+        "current_ratio": 0.583,
+        "gross_margin": 0.6493,
+        "net_margin": 0.3623,
+        "fcf_margin": 0.3021
+      }
     },
     "2022": {
       "income_statement": {
@@ -742,9 +1226,21 @@
         "close": 146.14,
         "high": 346.47,
         "low": 108.13,
-        "avg_price": 195.30
+        "avg_price": 195.3
       },
-      "shares_outstanding": 2470
+      "shares_outstanding": 2470,
+      "ratios": {
+        "pe_ratio": 112.24,
+        "pb_ratio": 21.83,
+        "ev_ebitda": 116.02,
+        "roe": 0.1976,
+        "roa": 0.1061,
+        "debt_equity": 0.5002,
+        "current_ratio": 1.063,
+        "gross_margin": 0.5693,
+        "net_margin": 0.1619,
+        "fcf_margin": 0.1427
+      }
     },
     "2023": {
       "income_statement": {
@@ -776,7 +1272,63 @@
         "low": 108.13,
         "avg_price": 305.81
       },
-      "shares_outstanding": 2460
+      "shares_outstanding": 2460,
+      "ratios": {
+        "pe_ratio": 25.63,
+        "pb_ratio": 17.21,
+        "ev_ebitda": 22.93,
+        "roe": 0.6808,
+        "roa": 0.4528,
+        "debt_equity": 0.2529,
+        "current_ratio": 2.025,
+        "gross_margin": 0.7272,
+        "net_margin": 0.4885,
+        "fcf_margin": 0.4439
+      }
+    },
+    "2019": {
+      "income_statement": {
+        "revenue": 10918,
+        "cogs": 4150,
+        "gross_profit": 6768,
+        "operating_income": 2846,
+        "net_income": 2796,
+        "eps": 1.12
+      },
+      "balance_sheet": {
+        "total_assets": 17315,
+        "total_liabilities": 6589,
+        "total_equity": 10726,
+        "cash": 10897,
+        "total_debt": 1991
+      },
+      "cash_flow": {
+        "operating_cf": 4761,
+        "investing_cf": -8816,
+        "financing_cf": 7741,
+        "fcf": 4272,
+        "capex": 489
+      },
+      "price": {
+        "open": 33.54,
+        "close": 58.95,
+        "high": 60.36,
+        "low": 30.84,
+        "avg_price": 44.65
+      },
+      "shares_outstanding": 2500,
+      "ratios": {
+        "pe_ratio": 39.87,
+        "pb_ratio": 10.41,
+        "ev_ebitda": 36.09,
+        "roe": 0.2607,
+        "roa": 0.1615,
+        "debt_equity": 0.1856,
+        "current_ratio": 6.065,
+        "gross_margin": 0.6199,
+        "net_margin": 0.2561,
+        "fcf_margin": 0.3913
+      }
     }
   },
   "TSLA": {
@@ -810,7 +1362,19 @@
         "low": 23.27,
         "avg_price": 135.39
       },
-      "shares_outstanding": 933
+      "shares_outstanding": 933,
+      "ratios": {
+        "pe_ratio": 180.52,
+        "pb_ratio": 5.32,
+        "ev_ebitda": 59.49,
+        "roe": 0.0304,
+        "roa": 0.0138,
+        "debt_equity": 0.4925,
+        "current_ratio": 2.644,
+        "gross_margin": 0.2102,
+        "net_margin": 0.0229,
+        "fcf_margin": -0.0477
+      }
     },
     "2021": {
       "income_statement": {
@@ -819,7 +1383,7 @@
         "gross_profit": 13606,
         "operating_income": 6523,
         "net_income": 5519,
-        "eps": 5.60
+        "eps": 5.6
       },
       "balance_sheet": {
         "total_assets": 62131,
@@ -838,11 +1402,23 @@
       "price": {
         "open": 243.26,
         "close": 352.26,
-        "high": 414.50,
+        "high": 414.5,
         "low": 195.55,
         "avg_price": 273.41
       },
-      "shares_outstanding": 985
+      "shares_outstanding": 985,
+      "ratios": {
+        "pe_ratio": 48.82,
+        "pb_ratio": 8.53,
+        "ev_ebitda": 39.64,
+        "roe": 0.1747,
+        "roa": 0.0888,
+        "debt_equity": 0.2166,
+        "current_ratio": 2.505,
+        "gross_margin": 0.2528,
+        "net_margin": 0.1025,
+        "fcf_margin": -0.0098
+      }
     },
     "2022": {
       "income_statement": {
@@ -870,11 +1446,23 @@
       "price": {
         "open": 399.93,
         "close": 123.18,
-        "high": 414.50,
+        "high": 414.5,
         "low": 101.81,
         "avg_price": 237.66
       },
-      "shares_outstanding": 3130
+      "shares_outstanding": 3130,
+      "ratios": {
+        "pe_ratio": 65.65,
+        "pb_ratio": 16.21,
+        "ev_ebitda": 53.7,
+        "roe": 0.2736,
+        "roa": 0.1525,
+        "debt_equity": 0.1252,
+        "current_ratio": 2.232,
+        "gross_margin": 0.256,
+        "net_margin": 0.1541,
+        "fcf_margin": 0.0929
+      }
     },
     "2023": {
       "income_statement": {
@@ -906,7 +1494,63 @@
         "low": 101.81,
         "avg_price": 207.65
       },
-      "shares_outstanding": 3174
+      "shares_outstanding": 3174,
+      "ratios": {
+        "pe_ratio": 83.39,
+        "pb_ratio": 10.36,
+        "ev_ebitda": 72.93,
+        "roe": 0.1246,
+        "roa": 0.0744,
+        "debt_equity": 0.0902,
+        "current_ratio": 2.021,
+        "gross_margin": 0.1825,
+        "net_margin": 0.0819,
+        "fcf_margin": 0.045
+      }
+    },
+    "2019": {
+      "income_statement": {
+        "revenue": 24578,
+        "cogs": 20509,
+        "gross_profit": 4069,
+        "operating_income": -69,
+        "net_income": -862,
+        "eps": -0.98
+      },
+      "balance_sheet": {
+        "total_assets": 34309,
+        "total_liabilities": 26199,
+        "total_equity": 8110,
+        "cash": 6268,
+        "total_debt": 13419
+      },
+      "cash_flow": {
+        "operating_cf": 2405,
+        "investing_cf": -1436,
+        "financing_cf": 2144,
+        "fcf": -752,
+        "capex": 3157
+      },
+      "price": {
+        "open": 20.63,
+        "close": 27.89,
+        "high": 28.44,
+        "low": 14.0,
+        "avg_price": 21.22
+      },
+      "shares_outstanding": 885,
+      "ratios": {
+        "pe_ratio": null,
+        "pb_ratio": 2.32,
+        "ev_ebitda": null,
+        "roe": -0.1063,
+        "roa": -0.0251,
+        "debt_equity": 1.6546,
+        "current_ratio": 1.11,
+        "gross_margin": 0.1656,
+        "net_margin": -0.0351,
+        "fcf_margin": -0.0306
+      }
     }
   },
   "F": {
@@ -940,7 +1584,19 @@
         "low": 3.96,
         "avg_price": 6.77
       },
-      "shares_outstanding": 3970
+      "shares_outstanding": 3970,
+      "ratios": {
+        "pe_ratio": null,
+        "pb_ratio": 0.78,
+        "ev_ebitda": null,
+        "roe": -0.0372,
+        "roa": -0.0048,
+        "debt_equity": 4.4874,
+        "current_ratio": 0.543,
+        "gross_margin": 0.0983,
+        "net_margin": -0.0101,
+        "fcf_margin": -0.0182
+      }
     },
     "2021": {
       "income_statement": {
@@ -966,13 +1622,25 @@
         "capex": 6170
       },
       "price": {
-        "open": 9.00,
+        "open": 9.0,
         "close": 20.77,
         "high": 21.45,
         "low": 8.43,
         "avg_price": 14.74
       },
-      "shares_outstanding": 3980
+      "shares_outstanding": 3980,
+      "ratios": {
+        "pe_ratio": 3.31,
+        "pb_ratio": 1.21,
+        "ev_ebitda": 34.83,
+        "roe": 0.3696,
+        "roa": 0.0698,
+        "debt_equity": 2.8109,
+        "current_ratio": 0.546,
+        "gross_margin": 0.1171,
+        "net_margin": 0.1316,
+        "fcf_margin": 0.0705
+      }
     },
     "2022": {
       "income_statement": {
@@ -1004,7 +1672,19 @@
         "low": 10.61,
         "avg_price": 14.01
       },
-      "shares_outstanding": 4003
+      "shares_outstanding": 4003,
+      "ratios": {
+        "pe_ratio": null,
+        "pb_ratio": 1.24,
+        "ev_ebitda": 58.8,
+        "roe": -0.0438,
+        "roa": -0.0077,
+        "debt_equity": 3.0213,
+        "current_ratio": 0.648,
+        "gross_margin": 0.1066,
+        "net_margin": -0.0125,
+        "fcf_margin": -0.0119
+      }
     },
     "2023": {
       "income_statement": {
@@ -1036,7 +1716,63 @@
         "low": 9.63,
         "avg_price": 12.03
       },
-      "shares_outstanding": 3998
+      "shares_outstanding": 3998,
+      "ratios": {
+        "pe_ratio": 11.14,
+        "pb_ratio": 1.1,
+        "ev_ebitda": 37.93,
+        "roe": 0.0998,
+        "roa": 0.0166,
+        "debt_equity": 3.2528,
+        "current_ratio": 0.665,
+        "gross_margin": 0.117,
+        "net_margin": 0.0247,
+        "fcf_margin": 0.0176
+      }
+    },
+    "2019": {
+      "income_statement": {
+        "revenue": 155900,
+        "cogs": 137239,
+        "gross_profit": 18661,
+        "operating_income": 2378,
+        "net_income": 47,
+        "eps": 0.01
+      },
+      "balance_sheet": {
+        "total_assets": 256540,
+        "total_liabilities": 225750,
+        "total_equity": 30790,
+        "cash": 22277,
+        "total_debt": 154297
+      },
+      "cash_flow": {
+        "operating_cf": 17639,
+        "investing_cf": -7633,
+        "financing_cf": -15121,
+        "fcf": 10007,
+        "capex": 7632
+      },
+      "price": {
+        "open": 8.35,
+        "close": 9.3,
+        "high": 10.56,
+        "low": 7.41,
+        "avg_price": 8.86
+      },
+      "shares_outstanding": 3980,
+      "ratios": {
+        "pe_ratio": 886.0,
+        "pb_ratio": 1.15,
+        "ev_ebitda": 70.35,
+        "roe": 0.0015,
+        "roa": 0.0002,
+        "debt_equity": 5.0113,
+        "current_ratio": 0.559,
+        "gross_margin": 0.1197,
+        "net_margin": 0.0003,
+        "fcf_margin": 0.0642
+      }
     }
   },
   "GM": {
@@ -1064,13 +1800,25 @@
         "capex": 12250
       },
       "price": {
-        "open": 36.70,
+        "open": 36.7,
         "close": 41.64,
         "high": 43.22,
-        "low": 16.80,
+        "low": 16.8,
         "avg_price": 29.66
       },
-      "shares_outstanding": 1445
+      "shares_outstanding": 1445,
+      "ratios": {
+        "pe_ratio": 6.73,
+        "pb_ratio": 0.98,
+        "ev_ebitda": 14.73,
+        "roe": 0.1466,
+        "roa": 0.0273,
+        "debt_equity": 2.1589,
+        "current_ratio": 0.562,
+        "gross_margin": 0.1789,
+        "net_margin": 0.0525,
+        "fcf_margin": -0.0093
+      }
     },
     "2021": {
       "income_statement": {
@@ -1102,7 +1850,19 @@
         "low": 38.94,
         "avg_price": 53.08
       },
-      "shares_outstanding": 1442
+      "shares_outstanding": 1442,
+      "ratios": {
+        "pe_ratio": 7.76,
+        "pb_ratio": 1.56,
+        "ev_ebitda": 14.7,
+        "roe": 0.2048,
+        "roa": 0.0409,
+        "debt_equity": 1.801,
+        "current_ratio": 0.558,
+        "gross_margin": 0.1544,
+        "net_margin": 0.0789,
+        "fcf_margin": 0.0442
+      }
     },
     "2022": {
       "income_statement": {
@@ -1128,13 +1888,25 @@
         "capex": 10600
       },
       "price": {
-        "open": 58.80,
+        "open": 58.8,
         "close": 33.68,
         "high": 67.21,
         "low": 30.33,
         "avg_price": 38.91
       },
-      "shares_outstanding": 1432
+      "shares_outstanding": 1432,
+      "ratios": {
+        "pe_ratio": 5.66,
+        "pb_ratio": 1.07,
+        "ev_ebitda": 10.21,
+        "roe": 0.1905,
+        "roa": 0.0376,
+        "debt_equity": 1.8858,
+        "current_ratio": 0.548,
+        "gross_margin": 0.1486,
+        "net_margin": 0.0634,
+        "fcf_margin": 0.051
+      }
     },
     "2023": {
       "income_statement": {
@@ -1163,10 +1935,66 @@
         "open": 33.95,
         "close": 35.96,
         "high": 43.33,
-        "low": 26.30,
+        "low": 26.3,
         "avg_price": 34.32
       },
-      "shares_outstanding": 1398
+      "shares_outstanding": 1398,
+      "ratios": {
+        "pe_ratio": 4.82,
+        "pb_ratio": 0.88,
+        "ev_ebitda": 10.84,
+        "roe": 0.1853,
+        "roa": 0.0369,
+        "debt_equity": 1.8799,
+        "current_ratio": 0.549,
+        "gross_margin": 0.1444,
+        "net_margin": 0.0587,
+        "fcf_margin": 0.0609
+      }
+    },
+    "2019": {
+      "income_statement": {
+        "revenue": 137237,
+        "cogs": 120656,
+        "gross_profit": 16581,
+        "operating_income": 8203,
+        "net_income": 6732,
+        "eps": 4.57
+      },
+      "balance_sheet": {
+        "total_assets": 228037,
+        "total_liabilities": 175199,
+        "total_equity": 52838,
+        "cash": 19969,
+        "total_debt": 96698
+      },
+      "cash_flow": {
+        "operating_cf": 13453,
+        "investing_cf": -10053,
+        "financing_cf": -7055,
+        "fcf": 4619,
+        "capex": 8834
+      },
+      "price": {
+        "open": 33.34,
+        "close": 36.53,
+        "high": 41.9,
+        "low": 28.7,
+        "avg_price": 35.12
+      },
+      "shares_outstanding": 1430,
+      "ratios": {
+        "pe_ratio": 7.68,
+        "pb_ratio": 0.95,
+        "ev_ebitda": 15.48,
+        "roe": 0.1274,
+        "roa": 0.0295,
+        "debt_equity": 1.8301,
+        "current_ratio": 0.641,
+        "gross_margin": 0.1208,
+        "net_margin": 0.0491,
+        "fcf_margin": 0.0337
+      }
     }
   },
   "JPM": {
@@ -1194,13 +2022,25 @@
         "capex": 5200
       },
       "price": {
-        "open": 138.20,
+        "open": 138.2,
         "close": 127.07,
-        "high": 141.10,
+        "high": 141.1,
         "low": 76.91,
         "avg_price": 106.01
       },
-      "shares_outstanding": 3049
+      "shares_outstanding": 3049,
+      "ratios": {
+        "pe_ratio": 11.94,
+        "pb_ratio": 1.09,
+        "ev_ebitda": 9.03,
+        "roe": 0.0978,
+        "roa": 0.0086,
+        "debt_equity": 1.4866,
+        "current_ratio": 0.576,
+        "gross_margin": 0.4703,
+        "net_margin": 0.2437,
+        "fcf_margin": 0.2624
+      }
     },
     "2021": {
       "income_statement": {
@@ -1232,7 +2072,19 @@
         "low": 125.26,
         "avg_price": 149.11
       },
-      "shares_outstanding": 2997
+      "shares_outstanding": 2997,
+      "ratios": {
+        "pe_ratio": 9.69,
+        "pb_ratio": 1.4,
+        "ev_ebitda": 2.65,
+        "roe": 0.1518,
+        "roa": 0.0129,
+        "debt_equity": 1.3723,
+        "current_ratio": 0.742,
+        "gross_margin": 0.5458,
+        "net_margin": 0.38,
+        "fcf_margin": -0.0394
+      }
     },
     "2022": {
       "income_statement": {
@@ -1259,12 +2111,24 @@
       },
       "price": {
         "open": 158.07,
-        "close": 134.10,
+        "close": 134.1,
         "high": 172.96,
         "low": 101.28,
         "avg_price": 127.12
       },
-      "shares_outstanding": 2946
+      "shares_outstanding": 2946,
+      "ratios": {
+        "pe_ratio": 10.51,
+        "pb_ratio": 1.28,
+        "ev_ebitda": 4.92,
+        "roe": 0.1285,
+        "roa": 0.0103,
+        "debt_equity": 1.4092,
+        "current_ratio": 0.572,
+        "gross_margin": 0.5804,
+        "net_margin": 0.2928,
+        "fcf_margin": 0.2212
+      }
     },
     "2023": {
       "income_statement": {
@@ -1291,12 +2155,512 @@
       },
       "price": {
         "open": 138.76,
-        "close": 170.10,
+        "close": 170.1,
         "high": 172.96,
-        "low": 123.10,
+        "low": 123.1,
         "avg_price": 148.03
       },
-      "shares_outstanding": 2894
+      "shares_outstanding": 2894,
+      "ratios": {
+        "pe_ratio": 9.12,
+        "pb_ratio": 1.28,
+        "ev_ebitda": 3.74,
+        "roe": 0.1482,
+        "roa": 0.0128,
+        "debt_equity": 1.2795,
+        "current_ratio": 0.601,
+        "gross_margin": 0.6093,
+        "net_margin": 0.3201,
+        "fcf_margin": 0.266
+      }
+    },
+    "2019": {
+      "income_statement": {
+        "revenue": 115627,
+        "cogs": 38210,
+        "gross_profit": 77417,
+        "operating_income": 42150,
+        "net_income": 36431,
+        "eps": 10.72
+      },
+      "balance_sheet": {
+        "total_assets": 2687379,
+        "total_liabilities": 2434628,
+        "total_equity": 252751,
+        "cash": 256192,
+        "total_debt": 473989
+      },
+      "cash_flow": {
+        "operating_cf": 28275,
+        "investing_cf": -4783,
+        "financing_cf": -18937,
+        "fcf": 24790,
+        "capex": 3485
+      },
+      "price": {
+        "open": 97.62,
+        "close": 139.4,
+        "high": 141.1,
+        "low": 93.76,
+        "avg_price": 116.51
+      },
+      "shares_outstanding": 3400,
+      "ratios": {
+        "pe_ratio": 10.87,
+        "pb_ratio": 1.57,
+        "ev_ebitda": 14.57,
+        "roe": 0.1441,
+        "roa": 0.0136,
+        "debt_equity": 1.8753,
+        "current_ratio": 0.367,
+        "gross_margin": 0.6695,
+        "net_margin": 0.3151,
+        "fcf_margin": 0.2144
+      }
+    }
+  },
+  "BAC": {
+    "2019": {
+      "income_statement": {
+        "revenue": 91244,
+        "cogs": 31130,
+        "gross_profit": 60114,
+        "operating_income": 32420,
+        "net_income": 27430,
+        "eps": 2.75
+      },
+      "balance_sheet": {
+        "total_assets": 2434079,
+        "total_liabilities": 2169263,
+        "total_equity": 264816,
+        "cash": 157377,
+        "total_debt": 454200
+      },
+      "cash_flow": {
+        "operating_cf": 21500,
+        "investing_cf": -3200,
+        "financing_cf": -14800,
+        "fcf": 18620,
+        "capex": 2880
+      },
+      "price": {
+        "open": 24.64,
+        "close": 35.22,
+        "high": 35.72,
+        "low": 22.66,
+        "avg_price": 28.93
+      },
+      "shares_outstanding": 9980,
+      "ratios": {
+        "pe_ratio": 10.52,
+        "pb_ratio": 1.09,
+        "ev_ebitda": 18.06,
+        "roe": 0.1036,
+        "roa": 0.0113,
+        "debt_equity": 1.7152,
+        "current_ratio": 0.256,
+        "gross_margin": 0.6588,
+        "net_margin": 0.3006,
+        "fcf_margin": 0.2041
+      }
+    },
+    "2020": {
+      "income_statement": {
+        "revenue": 85528,
+        "cogs": 32155,
+        "gross_profit": 53373,
+        "operating_income": 24150,
+        "net_income": 17894,
+        "eps": 1.87
+      },
+      "balance_sheet": {
+        "total_assets": 2819627,
+        "total_liabilities": 2547330,
+        "total_equity": 272297,
+        "cash": 364520,
+        "total_debt": 487300
+      },
+      "cash_flow": {
+        "operating_cf": 43962,
+        "investing_cf": -78541,
+        "financing_cf": 39200,
+        "fcf": 40842,
+        "capex": 3120
+      },
+      "price": {
+        "open": 35.23,
+        "close": 24.01,
+        "high": 35.67,
+        "low": 17.95,
+        "avg_price": 25.81
+      },
+      "shares_outstanding": 9560,
+      "ratios": {
+        "pe_ratio": 13.8,
+        "pb_ratio": 0.91,
+        "ev_ebitda": 15.3,
+        "roe": 0.0657,
+        "roa": 0.0063,
+        "debt_equity": 1.7896,
+        "current_ratio": 0.488,
+        "gross_margin": 0.624,
+        "net_margin": 0.2092,
+        "fcf_margin": 0.4775
+      }
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 89113,
+        "cogs": 29875,
+        "gross_profit": 59238,
+        "operating_income": 36800,
+        "net_income": 31978,
+        "eps": 3.57
+      },
+      "balance_sheet": {
+        "total_assets": 3169495,
+        "total_liabilities": 2862188,
+        "total_equity": 307307,
+        "cash": 372490,
+        "total_debt": 498700
+      },
+      "cash_flow": {
+        "operating_cf": 51230,
+        "investing_cf": -96783,
+        "financing_cf": 45120,
+        "fcf": 47880,
+        "capex": 3350
+      },
+      "price": {
+        "open": 24.15,
+        "close": 44.49,
+        "high": 48.23,
+        "low": 23.4,
+        "avg_price": 35.84
+      },
+      "shares_outstanding": 8950,
+      "ratios": {
+        "pe_ratio": 10.04,
+        "pb_ratio": 1.04,
+        "ev_ebitda": 12.15,
+        "roe": 0.1041,
+        "roa": 0.0101,
+        "debt_equity": 1.6228,
+        "current_ratio": 0.444,
+        "gross_margin": 0.6648,
+        "net_margin": 0.3588,
+        "fcf_margin": 0.5373
+      }
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 94950,
+        "cogs": 34200,
+        "gross_profit": 60750,
+        "operating_income": 34560,
+        "net_income": 27528,
+        "eps": 3.19
+      },
+      "balance_sheet": {
+        "total_assets": 3051375,
+        "total_liabilities": 2755025,
+        "total_equity": 296350,
+        "cash": 298160,
+        "total_debt": 485100
+      },
+      "cash_flow": {
+        "operating_cf": 23870,
+        "investing_cf": 52960,
+        "financing_cf": -70300,
+        "fcf": 20590,
+        "capex": 3280
+      },
+      "price": {
+        "open": 44.62,
+        "close": 33.07,
+        "high": 50.11,
+        "low": 29.31,
+        "avg_price": 38.56
+      },
+      "shares_outstanding": 8630,
+      "ratios": {
+        "pe_ratio": 12.09,
+        "pb_ratio": 1.12,
+        "ev_ebitda": 15.04,
+        "roe": 0.0929,
+        "roa": 0.009,
+        "debt_equity": 1.6369,
+        "current_ratio": 0.372,
+        "gross_margin": 0.6398,
+        "net_margin": 0.2899,
+        "fcf_margin": 0.2169
+      }
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 98581,
+        "cogs": 35720,
+        "gross_profit": 62861,
+        "operating_income": 33150,
+        "net_income": 26515,
+        "eps": 3.08
+      },
+      "balance_sheet": {
+        "total_assets": 3180151,
+        "total_liabilities": 2871540,
+        "total_equity": 308611,
+        "cash": 312750,
+        "total_debt": 479800
+      },
+      "cash_flow": {
+        "operating_cf": 28750,
+        "investing_cf": -18200,
+        "financing_cf": -12150,
+        "fcf": 25560,
+        "capex": 3190
+      },
+      "price": {
+        "open": 33.14,
+        "close": 33.67,
+        "high": 37.12,
+        "low": 24.96,
+        "avg_price": 30.84
+      },
+      "shares_outstanding": 8610,
+      "ratios": {
+        "pe_ratio": 10.01,
+        "pb_ratio": 0.86,
+        "ev_ebitda": 13.05,
+        "roe": 0.0859,
+        "roa": 0.0083,
+        "debt_equity": 1.5547,
+        "current_ratio": 0.374,
+        "gross_margin": 0.6377,
+        "net_margin": 0.269,
+        "fcf_margin": 0.2593
+      }
+    }
+  },
+  "WMT": {
+    "2019": {
+      "income_statement": {
+        "revenue": 523964,
+        "cogs": 394605,
+        "gross_profit": 129359,
+        "operating_income": 21957,
+        "net_income": 14881,
+        "eps": 5.19
+      },
+      "balance_sheet": {
+        "total_assets": 236495,
+        "total_liabilities": 152112,
+        "total_equity": 84383,
+        "cash": 7722,
+        "total_debt": 58188
+      },
+      "cash_flow": {
+        "operating_cf": 27753,
+        "investing_cf": -24036,
+        "financing_cf": -4872,
+        "fcf": 17048,
+        "capex": 10705
+      },
+      "price": {
+        "open": 93.15,
+        "close": 118.84,
+        "high": 120.92,
+        "low": 85.78,
+        "avg_price": 103.0
+      },
+      "shares_outstanding": 2868,
+      "ratios": {
+        "pe_ratio": 19.85,
+        "pb_ratio": 3.5,
+        "ev_ebitda": 15.75,
+        "roe": 0.1764,
+        "roa": 0.0629,
+        "debt_equity": 0.6896,
+        "current_ratio": 1.317,
+        "gross_margin": 0.2469,
+        "net_margin": 0.0284,
+        "fcf_margin": 0.0325
+      }
+    },
+    "2020": {
+      "income_statement": {
+        "revenue": 559151,
+        "cogs": 420315,
+        "gross_profit": 138836,
+        "operating_income": 22548,
+        "net_income": 13510,
+        "eps": 4.75
+      },
+      "balance_sheet": {
+        "total_assets": 252496,
+        "total_liabilities": 164965,
+        "total_equity": 87531,
+        "cash": 17741,
+        "total_debt": 63592
+      },
+      "cash_flow": {
+        "operating_cf": 36074,
+        "investing_cf": -10071,
+        "financing_cf": -27147,
+        "fcf": 25810,
+        "capex": 10264
+      },
+      "price": {
+        "open": 118.94,
+        "close": 144.15,
+        "high": 153.66,
+        "low": 102.0,
+        "avg_price": 128.83
+      },
+      "shares_outstanding": 2843,
+      "ratios": {
+        "pe_ratio": 27.12,
+        "pb_ratio": 4.18,
+        "ev_ebitda": 18.28,
+        "roe": 0.1543,
+        "roa": 0.0535,
+        "debt_equity": 0.7265,
+        "current_ratio": 1.488,
+        "gross_margin": 0.2483,
+        "net_margin": 0.0242,
+        "fcf_margin": 0.0462
+      }
+    },
+    "2021": {
+      "income_statement": {
+        "revenue": 572754,
+        "cogs": 429000,
+        "gross_profit": 143754,
+        "operating_income": 25942,
+        "net_income": 13673,
+        "eps": 4.87
+      },
+      "balance_sheet": {
+        "total_assets": 244860,
+        "total_liabilities": 159603,
+        "total_equity": 85257,
+        "cash": 14760,
+        "total_debt": 57987
+      },
+      "cash_flow": {
+        "operating_cf": 24181,
+        "investing_cf": -6015,
+        "financing_cf": -22891,
+        "fcf": 11075,
+        "capex": 13106
+      },
+      "price": {
+        "open": 144.26,
+        "close": 144.69,
+        "high": 152.57,
+        "low": 126.28,
+        "avg_price": 139.43
+      },
+      "shares_outstanding": 2808,
+      "ratios": {
+        "pe_ratio": 28.63,
+        "pb_ratio": 4.59,
+        "ev_ebitda": 16.76,
+        "roe": 0.1604,
+        "roa": 0.0558,
+        "debt_equity": 0.6801,
+        "current_ratio": 1.504,
+        "gross_margin": 0.251,
+        "net_margin": 0.0239,
+        "fcf_margin": 0.0193
+      }
+    },
+    "2022": {
+      "income_statement": {
+        "revenue": 611289,
+        "cogs": 464728,
+        "gross_profit": 146561,
+        "operating_income": 20428,
+        "net_income": 11680,
+        "eps": 4.27
+      },
+      "balance_sheet": {
+        "total_assets": 247199,
+        "total_liabilities": 160107,
+        "total_equity": 87092,
+        "cash": 8625,
+        "total_debt": 55270
+      },
+      "cash_flow": {
+        "operating_cf": 28841,
+        "investing_cf": -6830,
+        "financing_cf": -22194,
+        "fcf": 11984,
+        "capex": 16857
+      },
+      "price": {
+        "open": 144.78,
+        "close": 141.78,
+        "high": 160.77,
+        "low": 117.27,
+        "avg_price": 137.03
+      },
+      "shares_outstanding": 2736,
+      "ratios": {
+        "pe_ratio": 32.09,
+        "pb_ratio": 4.3,
+        "ev_ebitda": 20.64,
+        "roe": 0.1341,
+        "roa": 0.0472,
+        "debt_equity": 0.6346,
+        "current_ratio": 1.452,
+        "gross_margin": 0.2398,
+        "net_margin": 0.0191,
+        "fcf_margin": 0.0196
+      }
+    },
+    "2023": {
+      "income_statement": {
+        "revenue": 648125,
+        "cogs": 490458,
+        "gross_profit": 157667,
+        "operating_income": 27092,
+        "net_income": 15511,
+        "eps": 5.73
+      },
+      "balance_sheet": {
+        "total_assets": 253000,
+        "total_liabilities": 163210,
+        "total_equity": 89790,
+        "cash": 9497,
+        "total_debt": 52930
+      },
+      "cash_flow": {
+        "operating_cf": 35612,
+        "investing_cf": -17170,
+        "financing_cf": -15238,
+        "fcf": 19031,
+        "capex": 16581
+      },
+      "price": {
+        "open": 141.9,
+        "close": 157.06,
+        "high": 165.85,
+        "low": 132.38,
+        "avg_price": 149.12
+      },
+      "shares_outstanding": 2707,
+      "ratios": {
+        "pe_ratio": 26.02,
+        "pb_ratio": 4.5,
+        "ev_ebitda": 16.5,
+        "roe": 0.1727,
+        "roa": 0.0613,
+        "debt_equity": 0.5895,
+        "current_ratio": 1.518,
+        "gross_margin": 0.2433,
+        "net_margin": 0.0239,
+        "fcf_margin": 0.0294
+      }
     }
   }
 }
