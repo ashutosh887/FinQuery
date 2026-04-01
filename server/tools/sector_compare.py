@@ -44,4 +44,5 @@ def get(ticker: str, metric: str, year: int, data: dict, sectors: dict) -> dict:
         "sector": sector,
         "sector_median": sector_median,
         "percentile": max(0.0, min(100.0, percentile)),
+        "above_median": company_value > sector_median,
     }
