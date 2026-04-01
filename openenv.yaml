@@ -1,31 +1,37 @@
 name: finquery
 version: 0.1.0
 description: >
-  RL environment for training financial analysis agents on multi-step
-  data terminal tasks with dense per-step reward signals.
+  RL environment simulating a financial data terminal for training agents
+  on multi-step analytical reasoning with dense per-step reward signals.
+  Agents must navigate tool calls to answer verifiable financial questions.
+author: Dhurandhar Team
 tags:
   - openenv
   - finance
   - reasoning
   - enterprise
+  - multi-step
 tasks:
   - id: task1_easy
     name: Single-Metric Computation
     difficulty: easy
     description: "Compute Apple's net profit margin for FY2022"
+    max_steps: 10
   - id: task2_medium
-    name: Multi-Company Comparison
+    name: Multi-Company Ratio Comparison
     difficulty: medium
     description: "Compare EV/EBITDA across MSFT, GOOGL, META vs sector median"
+    max_steps: 20
   - id: task3_hard
     name: Multi-Year Anomaly Detection
     difficulty: hard
     description: "Detect FCF/PE anomalies across TSLA, F, GM over 2020-2023"
+    max_steps: 40
 action_schema: FinQueryAction
 observation_schema: FinQueryObservation
 state_schema: FinQueryState
-max_steps: 40
 reward_range: [0.0, 1.0]
+reward_type: dense
 endpoints:
   reset: POST /reset
   step: POST /step
