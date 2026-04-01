@@ -1,13 +1,9 @@
-"""Internal baseline runner used by the /baseline endpoint.
-
-Runs all 3 tasks using OpenAI API and returns scores.
-"""
+"""Internal baseline runner used by the /baseline endpoint."""
 
 from __future__ import annotations
 
 import json
 import re
-from typing import Dict
 
 from openai import OpenAI
 
@@ -32,21 +28,18 @@ Rules:
 
 def _extract_json(text: str) -> dict:
     """Extract JSON object from model response text."""
-    # Try direct parse
     text = text.strip()
     if text.startswith("{"):
         try:
             return json.loads(text)
         except json.JSONDecodeError:
             pass
-    # Try to find JSON in markdown code block
     match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
     if match:
         try:
             return json.loads(match.group(1))
         except json.JSONDecodeError:
             pass
-    # Try to find any JSON object
     match = re.search(r"\{[^{}]*\}", text)
     if match:
         try:
@@ -59,7 +52,8 @@ def _extract_json(text: str) -> dict:
 def run_single_task(env, task_id: str, api_key: str) -> float:
     """Run a single task and return the episode total reward."""
     client = OpenAI(api_key=api_key)
-    result = env.reset(task_id=task_id)
+    result = env.reset(task_id=task_id, agent_name="gpt-4o-mini-baseline")
+    episode_id = result["episode_id"]
     obs = result["observation"]
 
     messages = [
@@ -92,7 +86,7 @@ def run_single_task(env, task_id: str, api_key: str) -> float:
             })
             continue
 
-        step_result = env.step(action)
+        step_result = env.step(episode_id=episode_id, action=action)
         obs = step_result["observation"]
         total_reward += step_result["reward"]
 

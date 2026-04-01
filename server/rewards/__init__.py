@@ -1,1 +1,1 @@
-"""FinQueryGym rewards."""
+"""FinQuery rewards."""

@@ -1,1 +1,1 @@
-"""FinQueryGym server package."""
+"""FinQuery server package."""

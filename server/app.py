@@ -1,14 +1,18 @@
 """FastAPI app — all routes registered here.
 
-Endpoints: /reset, /step, /state, /tasks, /grader, /baseline, /health
+Endpoints: /reset, /step, /state, /tasks, /grader, /baseline,
+           /history, /leaderboard, /health, /ws
 """
 
+import json
 import os
 from contextlib import asynccontextmanager
+from typing import Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Query
+from fastapi.middleware.cors import CORSMiddleware
 
-from finquerygym.models import (
+from finquery.models import (
     BaselineResponse,
     FinQueryAction,
     GraderRequest,
@@ -18,20 +22,30 @@ from finquerygym.models import (
     StepResponse,
     TaskInfo,
 )
+from server.database import get_history, get_leaderboard, init_db
 from server.finquery_environment import TASKS, FinQueryEnvironment
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    init_db()
     app.state.env = FinQueryEnvironment()
     yield
 
 
 app = FastAPI(
-    title="FinQueryGym",
+    title="FinQuery",
     description="OpenEnv-compatible RL environment for financial analysis agents",
     version="0.1.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -40,7 +54,7 @@ def _env() -> FinQueryEnvironment:
 
 
 # --------------------------------------------------------------------------
-# Endpoints
+# Core endpoints
 # --------------------------------------------------------------------------
 
 @app.get("/health")
@@ -51,7 +65,7 @@ async def health():
 @app.post("/reset")
 async def reset(req: ResetRequest = ResetRequest()):
     try:
-        result = _env().reset(task_id=req.task_id)
+        result = _env().reset(task_id=req.task_id, agent_name=req.agent_name or "anonymous")
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -60,13 +74,15 @@ async def reset(req: ResetRequest = ResetRequest()):
 @app.post("/step")
 async def step(req: StepRequest):
     action_dict = req.action.model_dump(exclude_none=True)
-    result = _env().step(action_dict)
+    result = _env().step(episode_id=req.episode_id, action=action_dict)
+    if result.get("observation", {}).get("tool_error") == "Unknown episode_id. Call /reset first.":
+        raise HTTPException(status_code=404, detail="Unknown episode_id. Call /reset first.")
     return result
 
 
 @app.get("/state")
-async def state():
-    return _env().state()
+async def state(episode_id: Optional[str] = Query(None)):
+    return _env().state(episode_id=episode_id)
 
 
 @app.get("/tasks")
@@ -108,3 +124,75 @@ async def baseline():
         raise HTTPException(status_code=501, detail="Baseline runner not available")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# --------------------------------------------------------------------------
+# History & Leaderboard
+# --------------------------------------------------------------------------
+
+@app.get("/history")
+async def history(
+    limit: int = Query(50, ge=1, le=500),
+    task_id: Optional[str] = Query(None),
+):
+    return get_history(limit=limit, task_id=task_id)
+
+
+@app.get("/leaderboard")
+async def leaderboard(
+    limit: int = Query(20, ge=1, le=100),
+    task_id: Optional[str] = Query(None),
+):
+    return get_leaderboard(limit=limit, task_id=task_id)
+
+
+# --------------------------------------------------------------------------
+# WebSocket — real-time episode interaction
+# --------------------------------------------------------------------------
+
+@app.websocket("/ws")
+async def websocket_endpoint(ws: WebSocket):
+    await ws.accept()
+    env = _env()
+    current_episode_id: str | None = None
+
+    try:
+        while True:
+            raw = await ws.receive_text()
+            try:
+                msg = json.loads(raw)
+            except json.JSONDecodeError:
+                await ws.send_json({"error": "Invalid JSON"})
+                continue
+
+            msg_type = msg.get("type", "")
+
+            if msg_type == "reset":
+                task_id = msg.get("task_id")
+                agent_name = msg.get("agent_name", "anonymous")
+                try:
+                    result = env.reset(task_id=task_id, agent_name=agent_name)
+                    current_episode_id = result["episode_id"]
+                    await ws.send_json({"type": "reset_result", **result})
+                except ValueError as e:
+                    await ws.send_json({"type": "error", "detail": str(e)})
+
+            elif msg_type == "step":
+                eid = msg.get("episode_id", current_episode_id)
+                if not eid:
+                    await ws.send_json({"type": "error", "detail": "No episode_id. Send reset first."})
+                    continue
+                action = msg.get("action", {})
+                result = env.step(episode_id=eid, action=action)
+                await ws.send_json({"type": "step_result", **result})
+
+            elif msg_type == "state":
+                eid = msg.get("episode_id", current_episode_id)
+                result = env.state(episode_id=eid)
+                await ws.send_json({"type": "state_result", **result})
+
+            else:
+                await ws.send_json({"type": "error", "detail": f"Unknown message type: {msg_type}"})
+
+    except WebSocketDisconnect:
+        pass

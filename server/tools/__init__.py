@@ -1,4 +1,4 @@
-"""FinQueryGym tools — pure functions, no state."""
+"""FinQuery tools — pure functions, no state."""
 
 from . import income_statement, balance_sheet, cash_flow, price_history, ratios, sector_compare
 

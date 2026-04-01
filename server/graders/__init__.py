@@ -1,1 +1,1 @@
-"""FinQueryGym graders — deterministic, no LLM calls."""
+"""FinQuery graders — deterministic, no LLM calls."""

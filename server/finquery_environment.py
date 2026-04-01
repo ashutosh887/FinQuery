@@ -1,6 +1,7 @@
-"""Core FinQueryGym environment — reset(), step(), state().
+"""Core FinQuery environment — reset(), step(), state().
 
 Manages episode state, routes actions to tools, computes rewards.
+Supports concurrent episodes via episode_id-based session management.
 """
 
 from __future__ import annotations
@@ -10,7 +11,7 @@ import json
 import operator
 import uuid
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from server.tools import income_statement, balance_sheet, cash_flow, price_history, ratios, sector_compare
 from server.graders import task1_grader, task2_grader, task3_grader
@@ -19,6 +20,7 @@ from server.rewards.reward_engine import (
     compute_step_reward,
     compute_terminal_reward,
 )
+from server.database import save_episode, finish_episode, record_leaderboard
 
 DATA_DIR = Path(__file__).parent / "data"
 MAX_STEPS = 40
@@ -44,7 +46,7 @@ TASKS = {
             "Among Microsoft, Google, and Meta, which company had the most favorable "
             "EV/EBITDA relative to the tech sector median in 2023? By how many points "
             "did it differ from the sector median? Submit your answer as "
-            '{\"company\": \"TICKER\", \"delta\": NUMBER}.'
+            '{"company": "TICKER", "delta": NUMBER}.'
         ),
         "max_steps": MAX_STEPS,
         "required_fetches": task2_grader.GROUND_TRUTH["required_fetches"],
@@ -57,11 +59,11 @@ TASKS = {
         "difficulty": "hard",
         "description": (
             "Among Tesla, Ford, and GM — which company had negative free cash flow in "
-            "at least 2 of the 4 fiscal years from 2020–2023, AND had a P/E ratio above "
+            "at least 2 of the 4 fiscal years from 2020-2023, AND had a P/E ratio above "
             "30 in any of those same years? For each qualifying company, state which "
             "specific years had negative FCF and which years had P/E > 30. Submit as "
-            '{\"qualifying_companies\": [\"TICKER\"], \"details\": {\"TICKER\": '
-            '{\"negative_fcf_years\": [YEAR, ...], \"pe_above_30_years\": [YEAR, ...]}}}.'
+            '{"qualifying_companies": ["TICKER"], "details": {"TICKER": '
+            '{"negative_fcf_years": [YEAR, ...], "pe_above_30_years": [YEAR, ...]}}}.'
         ),
         "max_steps": MAX_STEPS,
         "required_fetches": task3_grader.GROUND_TRUTH["required_fetches"],
@@ -108,20 +110,20 @@ def _eval_node(node) -> float:
 
 
 class FinQueryEnvironment:
-    """Core environment managing episode lifecycle."""
+    """Core environment managing multiple concurrent episodes."""
 
     def __init__(self):
         with open(DATA_DIR / "financials.json") as f:
             self.data: dict = json.load(f)
         with open(DATA_DIR / "sectors.json") as f:
             self.sectors: dict = json.load(f)
-        self._episode: dict | None = None
+        self._episodes: dict[str, dict] = {}
 
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
 
-    def reset(self, task_id: str | None = None) -> dict:
+    def reset(self, task_id: str | None = None, agent_name: str = "anonymous") -> dict:
         import random
 
         if task_id is None:
@@ -130,11 +132,13 @@ class FinQueryEnvironment:
             raise ValueError(f"Unknown task_id: {task_id}. Available: {list(TASKS.keys())}")
 
         task = TASKS[task_id]
-        self._episode = {
-            "episode_id": str(uuid.uuid4()),
+        episode_id = str(uuid.uuid4())
+        ep = {
+            "episode_id": episode_id,
             "task_id": task_id,
             "task_difficulty": task["difficulty"],
             "task_description": task["description"],
+            "agent_name": agent_name,
             "step_count": 0,
             "max_steps": task["max_steps"],
             "fetched_data": {},
@@ -145,8 +149,13 @@ class FinQueryEnvironment:
             "cumulative_reward": 0.0,
             "done": False,
         }
+        self._episodes[episode_id] = ep
+
+        # Persist to DB
+        save_episode(episode_id, task_id, task["difficulty"], agent_name)
 
         return {
+            "episode_id": episode_id,
             "observation": {
                 "task_description": task["description"],
                 "tool_result": None,
@@ -161,13 +170,13 @@ class FinQueryEnvironment:
             "done": False,
         }
 
-    def step(self, action: dict) -> dict:
-        if self._episode is None:
-            return self._error_response("No active episode. Call /reset first.")
-        if self._episode["done"]:
+    def step(self, episode_id: str, action: dict) -> dict:
+        ep = self._episodes.get(episode_id)
+        if ep is None:
+            return self._error_response("Unknown episode_id. Call /reset first.")
+        if ep["done"]:
             return self._error_response("Episode already finished.")
 
-        ep = self._episode
         ep["step_count"] += 1
         action_type = action.get("action_type", "")
         task = TASKS[ep["task_id"]]
@@ -182,19 +191,19 @@ class FinQueryEnvironment:
                 ticker, year = self._validate_ticker_year(action)
                 tool_result = income_statement.get(ticker, year, self.data)
                 fetch_key = f"income_statement:{ticker}:{year}"
-                self._record_fetch(ticker, fetch_key, tool_result)
+                self._record_fetch(ep, ticker, fetch_key, tool_result)
 
             elif action_type == "get_balance_sheet":
                 ticker, year = self._validate_ticker_year(action)
                 tool_result = balance_sheet.get(ticker, year, self.data)
                 fetch_key = f"balance_sheet:{ticker}:{year}"
-                self._record_fetch(ticker, fetch_key, tool_result)
+                self._record_fetch(ep, ticker, fetch_key, tool_result)
 
             elif action_type == "get_cash_flow":
                 ticker, year = self._validate_ticker_year(action)
                 tool_result = cash_flow.get(ticker, year, self.data)
                 fetch_key = f"cash_flow:{ticker}:{year}"
-                self._record_fetch(ticker, fetch_key, tool_result)
+                self._record_fetch(ep, ticker, fetch_key, tool_result)
 
             elif action_type == "get_price_history":
                 ticker = self._require_field(action, "ticker").upper()
@@ -215,14 +224,14 @@ class FinQueryEnvironment:
                 ticker, year = self._validate_ticker_year(action)
                 tool_result = ratios.get(ticker, year, self.data)
                 fetch_key = f"ratios:{ticker}:{year}"
-                self._record_fetch(ticker, fetch_key, tool_result)
+                self._record_fetch(ep, ticker, fetch_key, tool_result)
 
             elif action_type == "compare_to_sector":
                 ticker, year = self._validate_ticker_year(action)
                 metric = self._require_field(action, "metric")
                 tool_result = sector_compare.get(ticker, metric, year, self.data, self.sectors)
                 fetch_key = f"sector_compare:{ticker}:{metric}:{year}"
-                self._record_fetch(ticker, fetch_key, tool_result)
+                self._record_fetch(ep, ticker, fetch_key, tool_result)
 
             elif action_type == "compute":
                 expression = self._require_field(action, "expression")
@@ -269,7 +278,18 @@ class FinQueryEnvironment:
                     "episode_total": round(ep["cumulative_reward"], 4),
                 }
 
+                # Persist completion
+                finish_episode(
+                    episode_id, ep["step_count"], ep["cumulative_reward"],
+                    answer, "answered",
+                )
+                record_leaderboard(
+                    ep["agent_name"], ep["task_id"],
+                    ep["cumulative_reward"], ep["step_count"],
+                )
+
                 return self._build_response(
+                    ep,
                     tool_result=tool_result,
                     tool_error=None,
                     reward=round(total_step, 4),
@@ -283,6 +303,7 @@ class FinQueryEnvironment:
             tool_error = str(e)
             ep["step_count"] -= 1  # Don't count invalid actions
             return self._build_response(
+                ep,
                 tool_result=None,
                 tool_error=tool_error,
                 reward=0.0,
@@ -310,8 +331,13 @@ class FinQueryEnvironment:
             status = "failed_max_steps"
             done = True
             ep["done"] = True
+            finish_episode(
+                episode_id, ep["step_count"], ep["cumulative_reward"],
+                None, "failed_max_steps",
+            )
 
         return self._build_response(
+            ep,
             tool_result=tool_result,
             tool_error=tool_error,
             reward=round(step_reward, 4),
@@ -320,18 +346,23 @@ class FinQueryEnvironment:
             done_override=done,
         )
 
-    def state(self) -> dict:
-        if self._episode is None:
-            return {
-                "episode_id": "",
-                "task_id": "",
-                "task_difficulty": "easy",
-                "step_count": 0,
-                "fetched_data": {},
-                "answer_submitted": False,
-                "score_so_far": 0.0,
-            }
-        ep = self._episode
+    def state(self, episode_id: str | None = None) -> dict:
+        if episode_id and episode_id in self._episodes:
+            ep = self._episodes[episode_id]
+        else:
+            # Fallback: return most recent episode or empty state
+            if self._episodes:
+                ep = list(self._episodes.values())[-1]
+            else:
+                return {
+                    "episode_id": "",
+                    "task_id": "",
+                    "task_difficulty": "easy",
+                    "step_count": 0,
+                    "fetched_data": {},
+                    "answer_submitted": False,
+                    "score_so_far": 0.0,
+                }
         return {
             "episode_id": ep["episode_id"],
             "task_id": ep["task_id"],
@@ -361,8 +392,7 @@ class FinQueryEnvironment:
             raise ValueError(f"Missing required field: {field}")
         return val
 
-    def _record_fetch(self, ticker: str, fetch_key: str, result: dict):
-        ep = self._episode
+    def _record_fetch(self, ep: dict, ticker: str, fetch_key: str, result: dict):
         if ticker not in ep["tickers_queried"]:
             ep["tickers_queried"].append(ticker)
         ep["fetched_data"][fetch_key] = result
@@ -371,6 +401,7 @@ class FinQueryEnvironment:
 
     def _build_response(
         self,
+        ep: dict,
         tool_result,
         tool_error,
         reward,
@@ -378,9 +409,9 @@ class FinQueryEnvironment:
         status,
         done_override=None,
     ) -> dict:
-        ep = self._episode
         done = done_override if done_override is not None else ep["done"]
         return {
+            "episode_id": ep["episode_id"],
             "observation": {
                 "task_description": ep["task_description"],
                 "tool_result": tool_result,

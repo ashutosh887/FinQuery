@@ -1,4 +1,4 @@
-"""Pydantic models defining the FinQueryGym API contract.
+"""Pydantic models defining the FinQuery API contract.
 
 This is the single source of truth for action, observation, and state types.
 If you change a field here, update client.py, openenv.yaml, and README.md.
@@ -63,10 +63,11 @@ class FinQueryState(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Endpoint helpers
+# Request / Response models
 # ---------------------------------------------------------------------------
 
 class StepResponse(BaseModel):
+    episode_id: Optional[str] = None
     observation: FinQueryObservation
     reward: float
     done: bool
@@ -74,9 +75,11 @@ class StepResponse(BaseModel):
 
 class ResetRequest(BaseModel):
     task_id: Optional[str] = None
+    agent_name: Optional[str] = "anonymous"
 
 
 class StepRequest(BaseModel):
+    episode_id: str
     action: FinQueryAction
 
 
@@ -102,3 +105,27 @@ class GraderResponse(BaseModel):
 
 class BaselineResponse(BaseModel):
     scores: Dict[str, float]
+
+
+# ---------------------------------------------------------------------------
+# History & Leaderboard
+# ---------------------------------------------------------------------------
+
+class EpisodeRecord(BaseModel):
+    episode_id: str
+    task_id: str
+    difficulty: str
+    agent_name: str
+    step_count: int
+    score: float
+    status: str
+    started_at: float
+    finished_at: Optional[float] = None
+
+
+class LeaderboardEntry(BaseModel):
+    agent_name: str
+    task_id: str
+    best_score: float
+    best_steps: int
+    attempts: int
