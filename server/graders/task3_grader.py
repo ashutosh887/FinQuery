@@ -41,7 +41,7 @@ def _score_years(details: dict, ground_truth_years: dict, key: str) -> float:
     return total_correct / total_expected if total_expected > 0 else 0.0
 
 
-def grade(answer, ground_truth=None):
+def grade(answer, ground_truth=None, **kwargs):
     gt = ground_truth or GROUND_TRUTH
     score = 0.0
     breakdown = {}

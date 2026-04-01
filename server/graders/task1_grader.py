@@ -13,7 +13,7 @@ GROUND_TRUTH = {
 }
 
 
-def grade(answer, ground_truth=None):
+def grade(answer, ground_truth=None, **kwargs):
     gt = ground_truth or GROUND_TRUTH
     try:
         val = float(answer)
