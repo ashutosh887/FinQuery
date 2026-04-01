@@ -1,4 +1,4 @@
-# CLAUDE.md — FinQueryGym
+# CLAUDE.md — FinQuery
 
 This file tells Claude Code how to work in this repo.
 
@@ -6,32 +6,33 @@ This file tells Claude Code how to work in this repo.
 
 ## What This Project Is
 
-FinQueryGym is an OpenEnv-compatible RL environment. It simulates a financial data terminal where an LLM agent must fetch data via tools, reason across multiple steps, and submit verified financial answers.
+FinQuery is an OpenEnv-compatible RL environment. It simulates a financial data terminal where an LLM agent must fetch data via tools, reason across multiple steps, and submit verified financial answers.
 
-The environment is a **FastAPI server running in Docker**, exposed via WebSocket and HTTP endpoints following the OpenEnv spec.
+The environment is a **FastAPI server** exposed via HTTP endpoints following the OpenEnv spec.
 
 ---
 
 ## Project Structure
 
 ```
-finquerygym/
-├── models.py                    # ALL Pydantic models live here. Edit this first.
-├── client.py                    # EnvClient subclass. Mirrors models.py types.
-├── openenv.yaml                 # Manifest. Keep in sync with models.py.
+finquery/
+├── finquery/
+│   ├── models.py                # ALL Pydantic models live here. Edit this first.
+│   └── client.py                # HTTP client. Mirrors models.py types.
+├── server/
+│   ├── app.py                   # FastAPI app. All routes registered here.
+│   ├── finquery_environment.py  # Core logic: reset(), step(), state()
+│   ├── _baseline_runner.py      # OpenAI baseline agent
+│   ├── data/
+│   │   ├── financials.json      # SOURCE OF TRUTH for all financial data
+│   │   └── sectors.json         # SOURCE OF TRUTH for sector medians
+│   ├── tools/                   # One file per tool. Pure functions, no state.
+│   ├── graders/                 # One file per task. Deterministic. No LLM calls.
+│   └── rewards/
+│       └── reward_engine.py     # Dense per-step reward logic
 ├── baseline.py                  # OpenAI API baseline runner. Must stay runnable.
-├── pyproject.toml               # Dependencies. Use uv to install.
-├── Dockerfile                   # Must build cleanly. Test before committing.
-└── server/
-    ├── app.py                   # FastAPI app. All routes registered here.
-    ├── finquery_environment.py  # Core logic: reset(), step(), state()
-    ├── data/
-    │   ├── financials.json      # SOURCE OF TRUTH for all financial data
-    │   └── sectors.json         # SOURCE OF TRUTH for sector medians
-    ├── tools/                   # One file per tool. Pure functions, no state.
-    ├── graders/                 # One file per task. Deterministic. No LLM calls.
-    └── rewards/
-        └── reward_engine.py     # Dense per-step reward logic
+├── openenv.yaml                 # Manifest. Keep in sync with models.py.
+└── pyproject.toml               # Dependencies.
 ```
 
 ---
@@ -57,36 +58,22 @@ Graders in `server/graders/` must never call an LLM for scoring. All scoring is 
 4. Update `README.md` Action/Observation Space section
 
 ### All tools are pure functions
-Files in `server/tools/` take `(ticker: str, year: int, data: dict)` and return a dict. They do not read from disk themselves — the environment passes the pre-loaded data dict to them. This makes testing trivial.
+Files in `server/tools/` take `(ticker: str, year: int, data: dict)` and return a dict. They do not read from disk themselves — the environment passes the pre-loaded data dict to them.
 
 ---
 
 ## Running Locally
 
 ```bash
-# Install with uv (preferred)
-uv pip install -e .
+# Install
+pip install -e .
 
 # Run server
-uv run uvicorn server.app:app --host 0.0.0.0 --port 8000 --reload
-
-# Run tests
-uv run pytest tests/ -v
+uvicorn server.app:app --host 0.0.0.0 --port 8000 --reload
 
 # Validate OpenEnv spec
 openenv validate
 ```
-
----
-
-## Docker
-
-```bash
-docker build -t finquerygym .
-docker run -p 8000:8000 finquerygym
-```
-
-The Dockerfile uses `uv` for dependency installation. Do not change it to pip without testing the build.
 
 ---
 
@@ -110,7 +97,7 @@ Task 3 (hard)   — score: 0.28
 
 ## Required Endpoints
 
-These must all return 200 and correct responses before submitting:
+These must all return 200 and correct responses:
 
 | Endpoint | What it must do |
 |---|---|
@@ -120,8 +107,6 @@ These must all return 200 and correct responses before submitting:
 | `GET /tasks` | Returns list of all 3 tasks with their action schema |
 | `POST /grader` | Accepts completed episode, returns score breakdown |
 | `POST /baseline` | Runs baseline agent on all 3 tasks, returns scores |
-
-Test all 6 before deployment.
 
 ---
 
@@ -180,42 +165,21 @@ All monetary values in millions USD. All values are internally consistent (e.g. 
 
 ---
 
-## Task Ground Truth Format
-
-Each task in `server/graders/` has a companion ground truth file. Example for task 1:
-
-```python
-TASK1_GROUND_TRUTH = {
-    "aapl_net_margin_2022": {
-        "answer": 25.31,       # percentage
-        "tolerance": 0.05,     # acceptable rounding error
-        "required_fetches": ["income_statement:AAPL:2022"],
-        "min_fetches": 1
-    }
-}
-```
-
-Do not change ground truth values without re-running `baseline.py` and updating README baseline scores.
-
----
-
 ## Reward Engine Logic
 
 ```python
-# server/rewards/reward_engine.py
-
 STEP_REWARDS = {
-    "relevant_fetch": +0.05,      # fetched data that's needed for the task
-    "irrelevant_fetch": -0.02,    # fetched data not related to task
-    "duplicate_fetch": -0.01,     # same (tool, ticker, year) called twice
-    "correct_compute": +0.10,     # compute expression matches expected intermediate
-    "blind_submit": -0.05,        # submit_answer with zero prior data fetches
+    "relevant_fetch": +0.05,
+    "irrelevant_fetch": -0.02,
+    "duplicate_fetch": -0.01,
+    "correct_compute": +0.10,
+    "blind_submit": -0.05,
 }
-
-# Terminal reward: scaled accuracy from grader, clipped to [0.0, 0.70]
-# Efficiency bonus: +0.10 if steps_taken <= 0.6 * max_steps
-# Total episode reward: clipped to [0.0, 1.0]
 ```
+
+- Terminal reward: scaled accuracy from grader, clipped to [0.0, 0.70]
+- Efficiency bonus: +0.10 if steps_taken <= 0.6 * max_steps
+- Total episode reward: clipped to [0.0, 1.0]
 
 Relevance of a fetch is determined by checking if the fetched `(tool, ticker, year)` combination appears in the task's `required_fetches` list. This is pre-computed per task — not LLM-judged.
 
@@ -224,38 +188,8 @@ Relevance of a fetch is determined by checking if the fetched `(tool, ticker, ye
 ## Common Mistakes to Avoid
 
 1. **Do not add LLM calls to graders.** Graders must be pure functions.
-2. **Do not import from `server/` in `client.py`.** The client ships separately — it cannot depend on server code.
+2. **Do not import from `server/` in `client.py`.** The client ships separately.
 3. **Do not hardcode ticker lists in environment logic.** Load from `financials.json` keys dynamically.
 4. **Do not reset episode state in `state()`.** `state()` is read-only.
 5. **Do not let `step()` raise unhandled exceptions.** All invalid actions must return an observation with `tool_error` set, reward of 0, and `done=False`.
 6. **Do not change max_steps without updating `openenv.yaml`.** They must match.
-
----
-
-## Before Submitting
-
-Run this checklist:
-
-```bash
-# 1. Validate spec
-openenv validate
-
-# 2. Docker build
-docker build -t finquerygym . && echo "BUILD OK"
-
-# 3. Docker run + smoke test
-docker run -d -p 8000:8000 finquerygym
-curl -X POST http://localhost:8000/reset
-curl http://localhost:8000/tasks
-curl http://localhost:8000/state
-
-# 4. Baseline
-export OPENAI_API_KEY=your_key
-python baseline.py
-
-# 5. HF Space
-openenv push
-curl https://your-space.hf.space/reset
-```
-
-All 5 must pass cleanly.
