@@ -38,14 +38,12 @@ def grade(answer, ground_truth=None, step_count=None, max_steps=20):
     else:
         return {"score": 0.0, "breakdown": {"error": "invalid answer format"}}
 
-    # Correct company: 0.40
     if company == gt["correct_company"]:
         breakdown["correct_company"] = 0.40
         score += 0.40
     else:
         breakdown["correct_company"] = 0.0
 
-    # Correct delta: 0.40
     if delta is not None:
         try:
             diff = abs(float(delta) - gt["correct_delta"])
@@ -59,7 +57,6 @@ def grade(answer, ground_truth=None, step_count=None, max_steps=20):
     else:
         breakdown["correct_delta"] = 0.0
 
-    # Efficiency: 0.20 (if step_count provided and <= max_steps/2)
     if step_count is not None and step_count <= max_steps * 0.5:
         breakdown["efficiency"] = 0.20
         score += 0.20

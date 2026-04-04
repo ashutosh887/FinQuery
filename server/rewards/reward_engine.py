@@ -33,7 +33,6 @@ def compute_step_reward(
 ) -> tuple[float, str | None]:
     """Return (reward, feedback) for a single step."""
 
-    # --- submit_answer ---
     if action_type == "submit_answer":
         if len(fetch_log) == 0:
             return STEP_REWARDS["blind_submit"], "No data fetched before submitting — blind submit penalty"
@@ -41,7 +40,6 @@ def compute_step_reward(
             return MIN_FETCH_PENALTY, f"Submitted with only {len(fetch_log)} fetches (minimum: {min_fetches})"
         return 0.0, None
 
-    # --- compute ---
     if action_type == "compute":
         if computed_result is not None and expected_intermediates:
             for exp in expected_intermediates:
@@ -49,7 +47,6 @@ def compute_step_reward(
                     return STEP_REWARDS["correct_compute"], "Correct intermediate computation"
         return 0.0, None
 
-    # --- data fetch ---
     if fetch_key is None:
         return 0.0, None
 

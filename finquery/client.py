@@ -29,8 +29,6 @@ class FinQueryEnv:
         self._session = requests.Session()
         self._episode_id: str | None = None
 
-    # -- context manager -------------------------------------------------------
-
     def __enter__(self):
         return self
 
@@ -39,8 +37,6 @@ class FinQueryEnv:
 
     def sync(self):
         return self
-
-    # -- core API --------------------------------------------------------------
 
     def reset(self, task_id: Optional[str] = None, agent_name: str = "anonymous") -> StepResponse:
         payload: dict = {}
@@ -70,8 +66,6 @@ class FinQueryEnv:
         resp = self._session.get(f"{self.base_url}/state", params=params)
         resp.raise_for_status()
         return FinQueryState(**resp.json())
-
-    # -- extra endpoints -------------------------------------------------------
 
     def tasks(self) -> List[TaskInfo]:
         resp = self._session.get(f"{self.base_url}/tasks")

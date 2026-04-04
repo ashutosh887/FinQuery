@@ -53,10 +53,6 @@ def _env() -> FinQueryEnvironment:
     return app.state.env
 
 
-# --------------------------------------------------------------------------
-# Core endpoints
-# --------------------------------------------------------------------------
-
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
@@ -126,10 +122,6 @@ async def baseline():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# --------------------------------------------------------------------------
-# History & Leaderboard
-# --------------------------------------------------------------------------
-
 @app.get("/history")
 async def history(
     limit: int = Query(50, ge=1, le=500),
@@ -145,10 +137,6 @@ async def leaderboard(
 ):
     return get_leaderboard(limit=limit, task_id=task_id)
 
-
-# --------------------------------------------------------------------------
-# WebSocket — real-time episode interaction
-# --------------------------------------------------------------------------
 
 @app.websocket("/ws")
 async def websocket_endpoint(ws: WebSocket):
@@ -197,10 +185,6 @@ async def websocket_endpoint(ws: WebSocket):
     except WebSocketDisconnect:
         pass
 
-
-# --------------------------------------------------------------------------
-# Entry point
-# --------------------------------------------------------------------------
 
 def main():
     import uvicorn

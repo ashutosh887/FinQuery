@@ -14,11 +14,9 @@ def get(ticker: str, year: int, data: dict) -> dict:
 
     entry = data[ticker][year_str]
 
-    # Return pre-computed ratios if present
     if "ratios" in entry:
         return entry["ratios"]
 
-    # Fallback: compute from raw data
     inc = entry["income_statement"]
     bs = entry["balance_sheet"]
     price = entry["price"]

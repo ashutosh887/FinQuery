@@ -9,10 +9,6 @@ from typing import Any, Dict, List, Literal, Optional
 from pydantic import BaseModel, Field
 
 
-# ---------------------------------------------------------------------------
-# Action
-# ---------------------------------------------------------------------------
-
 class FinQueryAction(BaseModel):
     action_type: Literal[
         "get_income_statement",
@@ -33,10 +29,6 @@ class FinQueryAction(BaseModel):
     reasoning: Optional[str] = Field(None, description="Agent's chain of thought (logged, not graded)")
 
 
-# ---------------------------------------------------------------------------
-# Observation
-# ---------------------------------------------------------------------------
-
 class FinQueryObservation(BaseModel):
     task_description: str
     tool_result: Optional[Dict[str, Any]] = None
@@ -48,10 +40,6 @@ class FinQueryObservation(BaseModel):
     feedback: Optional[str] = None
 
 
-# ---------------------------------------------------------------------------
-# State
-# ---------------------------------------------------------------------------
-
 class FinQueryState(BaseModel):
     episode_id: str
     task_id: str
@@ -61,10 +49,6 @@ class FinQueryState(BaseModel):
     answer_submitted: bool
     score_so_far: float
 
-
-# ---------------------------------------------------------------------------
-# Request / Response models
-# ---------------------------------------------------------------------------
 
 class StepResponse(BaseModel):
     episode_id: Optional[str] = None
@@ -106,10 +90,6 @@ class GraderResponse(BaseModel):
 class BaselineResponse(BaseModel):
     scores: Dict[str, float]
 
-
-# ---------------------------------------------------------------------------
-# History & Leaderboard
-# ---------------------------------------------------------------------------
 
 class EpisodeRecord(BaseModel):
     episode_id: str

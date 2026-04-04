@@ -117,10 +117,6 @@ class FinQueryEnvironment:
             self.sectors: dict = json.load(f)
         self._episodes: dict[str, dict] = {}
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
-
     def reset(self, task_id: str | None = None, agent_name: str = "anonymous") -> dict:
         import random
 
@@ -148,8 +144,6 @@ class FinQueryEnvironment:
             "done": False,
         }
         self._episodes[episode_id] = ep
-
-        # Persist to DB
         save_episode(episode_id, task_id, task["difficulty"], agent_name)
 
         return {
@@ -280,7 +274,6 @@ class FinQueryEnvironment:
                     "episode_total": round(ep["cumulative_reward"], 4),
                 }
 
-                # Persist completion
                 finish_episode(
                     episode_id, ep["step_count"], ep["cumulative_reward"],
                     answer, "answered",
@@ -298,7 +291,6 @@ class FinQueryEnvironment:
                     feedback=feedback,
                     status="answered",
                 )
-                # Free memory — episode data is persisted in DB
                 del self._episodes[episode_id]
                 return response
             else:
@@ -306,7 +298,7 @@ class FinQueryEnvironment:
 
         except ValueError as e:
             tool_error = str(e)
-            ep["step_count"] -= 1  # Don't count invalid actions
+            ep["step_count"] -= 1
             return self._build_response(
                 ep,
                 tool_result=None,
@@ -316,7 +308,6 @@ class FinQueryEnvironment:
                 status="ongoing",
             )
 
-        # Compute step reward for non-submit actions
         step_reward, feedback = compute_step_reward(
             action_type=action_type,
             fetch_key=fetch_key,
@@ -329,7 +320,6 @@ class FinQueryEnvironment:
 
         ep["cumulative_reward"] += step_reward
 
-        # Check max steps
         status = "ongoing"
         done = False
         if ep["step_count"] >= ep["max_steps"]:
@@ -340,7 +330,6 @@ class FinQueryEnvironment:
                 episode_id, ep["step_count"], ep["cumulative_reward"],
                 None, "failed_max_steps",
             )
-            # Free memory — episode data is persisted in DB
             del self._episodes[episode_id]
 
         return self._build_response(
@@ -357,7 +346,6 @@ class FinQueryEnvironment:
         if episode_id and episode_id in self._episodes:
             ep = self._episodes[episode_id]
         elif not episode_id and self._episodes:
-            # No episode_id given — return most recent active episode
             ep = list(self._episodes.values())[-1]
         else:
             return {
@@ -378,10 +366,6 @@ class FinQueryEnvironment:
             "answer_submitted": ep["answer_submitted"],
             "score_so_far": round(ep["cumulative_reward"], 4),
         }
-
-    # ------------------------------------------------------------------
-    # Helpers
-    # ------------------------------------------------------------------
 
     def _validate_ticker_year(self, action: dict) -> tuple[str, int]:
         ticker = self._require_field(action, "ticker").upper()

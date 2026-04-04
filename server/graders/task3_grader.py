@@ -49,7 +49,6 @@ def grade(answer, ground_truth=None, **kwargs):
     if not isinstance(answer, dict):
         return {"score": 0.0, "breakdown": {"error": "expected dict answer"}}
 
-    # --- Correct companies identified: 0.30 ---
     raw_companies = answer.get("qualifying_companies", [])
     if isinstance(raw_companies, str):
         raw_companies = [raw_companies]
@@ -64,7 +63,6 @@ def grade(answer, ground_truth=None, **kwargs):
     breakdown["correct_companies"] = round(company_score, 4)
     score += company_score
 
-    # --- Correct FCF negative years: 0.30 ---
     details = answer.get("details", {})
     # Normalize keys to uppercase
     details = {k.upper(): v for k, v in details.items()} if isinstance(details, dict) else {}
@@ -72,7 +70,6 @@ def grade(answer, ground_truth=None, **kwargs):
     breakdown["correct_fcf_years"] = round(fcf_score * 0.30, 4)
     score += fcf_score * 0.30
 
-    # --- Correct P/E > 30 years: 0.30 ---
     pe_score = _score_years(details, gt["pe_above_30_years"], "pe_above_30_years")
     breakdown["correct_pe_years"] = round(pe_score * 0.30, 4)
     score += pe_score * 0.30
