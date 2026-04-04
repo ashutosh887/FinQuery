@@ -1,4 +1,3 @@
-
 ---
 title: FinQuery
 emoji: 📊
@@ -16,8 +15,8 @@ short_description: OpenEnv RL environment for financial agent reasoning
 
 > An OpenEnv-compatible RL environment simulating a financial data terminal for training agents on multi-step analytical reasoning.
 
-[![OpenEnv](https://img.shields.io/badge/OpenEnv-compatible-blue)](https://github.com/meta-pytorch/OpenEnv)
-[![HuggingFace](https://img.shields.io/badge/🤗-HuggingFace%20Space-yellow)](https://huggingface.co/spaces/openenv/finquery)
+[![OpenEnv](https://img.shields.io/badge/OpenEnv-compatible-blue)](https://github.com/openenv-ai/openenv)
+[![HuggingFace](https://img.shields.io/badge/🤗-HuggingFace%20Space-yellow)](https://huggingface.co/spaces/ashutosh887/FinQuery)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-green)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
 
@@ -38,6 +37,49 @@ The hard task reliably defeats frontier models that hallucinate intermediate val
 Bloomberg terminals charge ~$25,000/user/year. Every investment firm, hedge fund, and financial research team in the world pays this. The bottleneck is not data -- it's the analyst skill to navigate and reason across that data.
 
 FinQuery provides the first open RL training environment for this skill. Epoch AI's January 2026 research report on frontier lab RL environment procurement explicitly cites a "Bloomberg terminal clone" as a key domain labs are actively building. FinQuery is the open-source version of that.
+
+---
+
+## Project Structure
+
+```
+finquery/
+├── finquery/
+│   ├── __init__.py
+│   ├── models.py                 # FinQueryAction, FinQueryObservation, FinQueryState
+│   └── client.py                 # FinQueryEnv HTTP client
+├── server/
+│   ├── app.py                    # FastAPI app + all endpoints + WebSocket + CORS
+│   ├── database.py               # SQLite persistence (episodes + leaderboard)
+│   ├── finquery_environment.py   # Core environment (concurrent episodes)
+│   ├── _baseline_runner.py       # OpenAI baseline agent
+│   ├── data/
+│   │   ├── financials.json       # Synthetic dataset — 12 tickers, 5 years
+│   │   └── sectors.json          # Sector median benchmarks (4 sectors)
+│   ├── tools/
+│   │   ├── income_statement.py
+│   │   ├── balance_sheet.py
+│   │   ├── cash_flow.py
+│   │   ├── price_history.py
+│   │   ├── ratios.py
+│   │   └── sector_compare.py
+│   ├── graders/
+│   │   ├── task1_grader.py
+│   │   ├── task2_grader.py
+│   │   └── task3_grader.py
+│   └── rewards/
+│       └── reward_engine.py      # Dense per-step reward computation
+├── scripts/
+│   └── validate_data.py          # Data consistency checker
+├── inference.py                  # Hackathon submission inference script
+├── baseline.py                   # CLI baseline runner
+├── validation_script.sh          # OpenEnv submission validator
+├── Dockerfile                    # HF Spaces deployment (port 7860)
+├── openenv.yaml                  # OpenEnv manifest
+├── pyproject.toml
+├── LICENSE
+└── README.md
+```
 
 ---
 
@@ -217,8 +259,8 @@ python baseline.py
 ### Local
 
 ```bash
-git clone https://github.com/ashutosh887/finquery
-cd finquery
+git clone https://github.com/ashutosh887/FinQuery.git
+cd FinQuery
 pip install -e .
 uvicorn server.app:app --host 0.0.0.0 --port 8000 --reload
 ```
@@ -236,7 +278,7 @@ curl -X POST http://localhost:8000/reset
 ```python
 from finquery import FinQueryEnv, FinQueryAction
 
-with FinQueryEnv(base_url="http://localhost:8000").sync() as env:
+with FinQueryEnv(base_url="https://ashutosh887-finquery.hf.space").sync() as env:
     obs = env.reset(agent_name="my_agent")
     print(obs.episode_id)
     print(obs.observation.task_description)
@@ -263,7 +305,7 @@ with FinQueryEnv(base_url="http://localhost:8000").sync() as env:
 import json, websockets, asyncio
 
 async def run():
-    async with websockets.connect("ws://localhost:8000/ws") as ws:
+    async with websockets.connect("wss://ashutosh887-finquery.hf.space/ws") as ws:
         await ws.send(json.dumps({"type": "reset", "task_id": "task1_easy"}))
         result = json.loads(await ws.recv())
         episode_id = result["episode_id"]
@@ -281,7 +323,9 @@ asyncio.run(run())
 
 ---
 
-## Endpoints
+## API Endpoints
+
+Base URL: `https://ashutosh887-finquery.hf.space`
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -293,72 +337,8 @@ asyncio.run(run())
 | `/baseline` | POST | Run baseline agent on all tasks |
 | `/history` | GET | Episode history (query params: `limit`, `task_id`) |
 | `/leaderboard` | GET | Top scores by agent (query params: `limit`, `task_id`) |
-| `/health` | GET | Health check |
+| `/health` | GET | `{"status": "healthy"}` |
 | `/ws` | WebSocket | Real-time episode interaction |
-
----
-
-## Project Structure
-
-```
-finquery/
-├── finquery/
-│   ├── __init__.py
-│   ├── models.py              # FinQueryAction, FinQueryObservation, FinQueryState
-│   └── client.py              # FinQueryEnv HTTP client
-├── server/
-│   ├── app.py                 # FastAPI app + all endpoints + WebSocket + CORS
-│   ├── database.py            # SQLite persistence (episodes + leaderboard)
-│   ├── finquery_environment.py  # Core environment (concurrent episodes)
-│   ├── _baseline_runner.py    # OpenAI baseline agent
-│   ├── data/
-│   │   ├── financials.json    # Synthetic dataset — 12 tickers, 5 years
-│   │   └── sectors.json       # Sector median benchmarks (4 sectors)
-│   ├── tools/
-│   │   ├── income_statement.py
-│   │   ├── balance_sheet.py
-│   │   ├── cash_flow.py
-│   │   ├── price_history.py
-│   │   ├── ratios.py
-│   │   └── sector_compare.py
-│   ├── graders/
-│   │   ├── task1_grader.py
-│   │   ├── task2_grader.py
-│   │   └── task3_grader.py
-│   └── rewards/
-│       └── reward_engine.py   # Dense per-step reward computation
-├── scripts/
-│   └── validate_data.py       # Data consistency checker
-├── baseline.py                # CLI baseline runner
-├── Dockerfile                 # HF Spaces deployment (port 7860)
-├── openenv.yaml               # OpenEnv manifest
-├── pyproject.toml
-└── README.md
-```
-
----
-
-## Data Schema
-
-Each ticker/year entry in `financials.json` contains:
-
-```json
-{
-  "income_statement": { "revenue", "cogs", "gross_profit", "operating_income", "net_income", "eps" },
-  "balance_sheet": { "total_assets", "total_liabilities", "total_equity", "cash", "total_debt" },
-  "cash_flow": { "operating_cf", "investing_cf", "financing_cf", "fcf", "capex" },
-  "price": { "open", "close", "high", "low", "avg_price" },
-  "shares_outstanding": int,
-  "ratios": { "pe_ratio", "pb_ratio", "ev_ebitda", "roe", "roa", "debt_equity", "current_ratio", "gross_margin", "net_margin", "fcf_margin" }
-}
-```
-
-**Invariants enforced by `scripts/validate_data.py`:**
-- `gross_profit = revenue - cogs`
-- `total_assets = total_liabilities + total_equity`
-- `fcf = operating_cf - capex`
-- `gross_margin = gross_profit / revenue` (within 0.001)
-- `net_margin = net_income / revenue` (within 0.001)
 
 ---
 
