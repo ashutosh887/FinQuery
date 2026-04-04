@@ -9,7 +9,9 @@ COPY README.md .
 
 COPY finquery/ finquery/
 COPY server/ server/
+COPY scripts/ scripts/
 COPY baseline.py .
+COPY inference.py .
 COPY openenv.yaml .
 
 RUN uv pip install --system --no-cache -e .

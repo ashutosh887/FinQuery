@@ -32,6 +32,23 @@ observation_schema: FinQueryObservation
 state_schema: FinQueryState
 reward_range: [0.0, 1.0]
 reward_type: dense
+
+inference:
+  script: inference.py
+  env:
+    - API_BASE_URL
+    - MODEL_NAME
+    - HF_TOKEN
+  timeout: 1200
+  resources:
+    vcpu: 2
+    memory: 8gb
+
+deployment:
+  platform: huggingface
+  sdk: docker
+  port: 7860
+
 endpoints:
   reset: POST /reset
   step: POST /step
