@@ -57,7 +57,7 @@ finquery/
 │   ├── finquery_environment.py   # Core environment (concurrent episodes)
 │   ├── _baseline_runner.py       # OpenAI baseline agent
 │   ├── data/
-│   │   ├── financials.json       # Synthetic dataset — 12 tickers, 5 years
+│   │   ├── financials.json       # Synthetic dataset — 12 tickers, 6 years
 │   │   └── sectors.json          # Sector median benchmarks (4 sectors)
 │   ├── tools/
 │   │   ├── income_statement.py
@@ -104,8 +104,8 @@ class FinQueryAction(BaseModel):
         "submit_answer"
     ]
     ticker: Optional[str] = None        # e.g. "AAPL", "MSFT"
-    year: Optional[int] = None          # e.g. 2023
-    years: Optional[List[int]] = None   # e.g. [2020, 2021, 2022, 2023]
+    year: Optional[int] = None          # e.g. 2024
+    years: Optional[List[int]] = None   # e.g. [2020, 2021, 2022, 2023, 2024]
     metric: Optional[str] = None        # e.g. "pe_ratio"
     expression: Optional[str] = None    # arithmetic for compute action
     answer: Optional[Any] = None        # final answer for submit_answer
@@ -158,7 +158,7 @@ All tools return deterministic JSON from `server/data/`. No external API calls a
 
 All monetary figures are in millions USD. Data is synthetic but internally consistent — `FCF = operating_cf - capex`, `gross_profit = revenue - cogs`, `gross_margin = gross_profit / revenue` always hold.
 
-**Coverage:** 12 tickers (AAPL, MSFT, GOOGL, META, NVDA, TSLA, F, GM, JPM, BAC, AMZN, WMT) across 5 years (2019–2023) with 4 sectors (technology, automotive, banking, retail).
+**Coverage:** 12 tickers (AAPL, MSFT, GOOGL, META, NVDA, TSLA, F, GM, JPM, BAC, AMZN, WMT) across 6 years (2019–2024) with 4 sectors (technology, automotive, banking, retail).
 
 ---
 
@@ -204,10 +204,10 @@ All monetary figures are in millions USD. Data is synthetic but internally consi
 
 ### Task 3 — Hard: Multi-Year Anomaly Detection
 
-**Description:** Identify anomalous financial patterns across 4 years for multiple companies, requiring cross-referencing cash flow and ratio data.
+**Description:** Identify anomalous financial patterns across multiple years for multiple companies, requiring cross-referencing cash flow and ratio data.
 
 **Example prompt:**
-> *"Among Tesla, Ford, and GM — which had negative free cash flow in at least 2 of 4 fiscal years 2020–2023, AND had a P/E ratio above 30 in any of those years?"*
+> *"Among Tesla, Ford, and GM — which had negative free cash flow in at least 2 of 4 fiscal years 2020–2024, AND had a P/E ratio above 30 in any of those years?"*
 
 **Expected trajectory:** `get_cash_flow` ×12 + `get_ratios` ×12 → cross-reference → `submit_answer` (~28 steps, max 40)
 
@@ -290,14 +290,14 @@ with FinQueryEnv(base_url="https://ashutosh887-finquery.hf.space").sync() as env
     result = env.step(FinQueryAction(
         action_type="get_income_statement",
         ticker="AAPL",
-        year=2022
+        year=2024
     ))
     print(result.reward)
 
     result = env.step(FinQueryAction(
         action_type="submit_answer",
-        answer=25.31,
-        reasoning="Net income / Revenue = 99803 / 394328 * 100"
+        answer=26.50,
+        reasoning="Net income / Revenue = 110712 / 417781 * 100"
     ))
     print(result.reward)
     print(result.done)
@@ -317,7 +317,7 @@ async def run():
         await ws.send(json.dumps({
             "type": "step",
             "episode_id": episode_id,
-            "action": {"action_type": "get_income_statement", "ticker": "AAPL", "year": 2022}
+            "action": {"action_type": "get_income_statement", "ticker": "AAPL", "year": 2024}
         }))
         result = json.loads(await ws.recv())
         print(result["reward"])
@@ -333,6 +333,7 @@ Base URL: `https://ashutosh887-finquery.hf.space`
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
+| `/` | GET | Environment metadata and endpoint reference |
 | `/reset` | POST | Start new episode, returns `episode_id` + initial observation |
 | `/step` | POST | Take action (requires `episode_id`), returns observation + reward + done |
 | `/state` | GET | Episode metadata (query param: `episode_id`) |
