@@ -58,6 +58,31 @@ async def health():
     return {"status": "healthy"}
 
 
+@app.get("/")
+async def root():
+    return {
+        "name": "FinQuery",
+        "description": "An OpenEnv-compatible RL environment simulating a financial data terminal for training agents on multi-step analytical reasoning.",
+        "version": "0.1.0",
+        "tasks": ["task1_easy", "task2_medium", "task3_hard"],
+        "tickers": ["AAPL", "MSFT", "GOOGL", "META", "NVDA", "TSLA", "F", "GM", "JPM", "BAC", "AMZN", "WMT"],
+        "years": [2019, 2020, 2021, 2022, 2023, 2024],
+        "docs": "https://huggingface.co/spaces/ashutosh887/FinQuery",
+        "endpoints": {
+            "reset": "POST /reset",
+            "step": "POST /step",
+            "state": "GET /state",
+            "tasks": "GET /tasks",
+            "grader": "POST /grader",
+            "baseline": "POST /baseline",
+            "history": "GET /history",
+            "leaderboard": "GET /leaderboard",
+            "health": "GET /health",
+            "websocket": "WS /ws"
+        }
+    }
+
+
 @app.post("/reset")
 async def reset(req: ResetRequest = ResetRequest()):
     try:

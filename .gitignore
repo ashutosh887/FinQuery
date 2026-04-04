@@ -9,3 +9,5 @@ finquery.egg-info/
 sample_inference.py
 .env
 .DS_Store
+*.db
+.docs/
