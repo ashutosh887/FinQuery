@@ -7,6 +7,9 @@ sdk: docker
 app_port: 7860
 tags:
   - openenv
+  - reinforcement-learning
+  - finance
+  - agents
 license: mit
 short_description: OpenEnv RL environment for financial agent reasoning
 ---
@@ -15,7 +18,7 @@ short_description: OpenEnv RL environment for financial agent reasoning
 
 > An OpenEnv-compatible RL environment simulating a financial data terminal for training agents on multi-step analytical reasoning.
 
-[![OpenEnv](https://img.shields.io/badge/OpenEnv-compatible-blue)](https://github.com/openenv-ai/openenv)
+[![OpenEnv](https://img.shields.io/badge/OpenEnv-compatible-blue)](https://github.com/meta-pytorch/OpenEnv)
 [![HuggingFace](https://img.shields.io/badge/🤗-HuggingFace%20Space-yellow)](https://huggingface.co/spaces/ashutosh887/FinQuery)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-green)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
@@ -24,17 +27,17 @@ short_description: OpenEnv RL environment for financial agent reasoning
 
 ## Overview
 
-**FinQuery** is an RL environment where an agent operates like a financial analyst at a data terminal. The agent does not receive a pre-packaged dataset -- it must decide *which data to fetch, in what order, and how to combine it* to answer verifiable financial questions.
+**FinQuery** is an RL environment where an agent operates like a financial analyst at a data terminal. The agent does not receive a pre-packaged dataset — it must decide *which data to fetch, in what order, and how to combine it* to answer verifiable financial questions.
 
 The agent interacts with a suite of deterministic financial data tools across multi-step episodes. Rewards are issued at every step, making the reward function dense across the full trajectory rather than sparse at the end.
 
-The hard task reliably defeats frontier models that hallucinate intermediate values under multi-hop reasoning pressure -- making this a meaningful training signal for financial reasoning agents.
+The hard task reliably defeats frontier models that hallucinate intermediate values under multi-hop reasoning pressure — making this a meaningful training signal for financial reasoning agents.
 
 ---
 
 ## Motivation
 
-Bloomberg terminals charge ~$25,000/user/year. Every investment firm, hedge fund, and financial research team in the world pays this. The bottleneck is not data -- it's the analyst skill to navigate and reason across that data.
+Bloomberg terminals charge ~$25,000/user/year. Every investment firm, hedge fund, and financial research team in the world pays this. The bottleneck is not data — it's the analyst skill to navigate and reason across that data.
 
 FinQuery provides the first open RL training environment for this skill. Epoch AI's January 2026 research report on frontier lab RL environment procurement explicitly cites a "Bloomberg terminal clone" as a key domain labs are actively building. FinQuery is the open-source version of that.
 
@@ -77,6 +80,7 @@ finquery/
 ├── Dockerfile                    # HF Spaces deployment (port 7860)
 ├── openenv.yaml                  # OpenEnv manifest
 ├── pyproject.toml
+├── uv.lock
 ├── LICENSE
 └── README.md
 ```
@@ -152,22 +156,22 @@ All tools return deterministic JSON from `server/data/`. No external API calls a
 | `compute` | `expression` | Safe arithmetic evaluation, returns float |
 | `submit_answer` | `answer` | Triggers grader, returns score breakdown |
 
-All monetary figures are in millions USD. Data is synthetic but internally consistent -- `FCF = operating_cf - capex`, `gross_profit = revenue - cogs`, `gross_margin = gross_profit / revenue` always hold.
+All monetary figures are in millions USD. Data is synthetic but internally consistent — `FCF = operating_cf - capex`, `gross_profit = revenue - cogs`, `gross_margin = gross_profit / revenue` always hold.
 
-**Coverage:** 12 tickers (AAPL, MSFT, GOOGL, META, NVDA, TSLA, F, GM, JPM, BAC, AMZN, WMT) across 5 years (2019-2023) with 4 sectors (technology, automotive, banking, retail).
+**Coverage:** 12 tickers (AAPL, MSFT, GOOGL, META, NVDA, TSLA, F, GM, JPM, BAC, AMZN, WMT) across 5 years (2019–2023) with 4 sectors (technology, automotive, banking, retail).
 
 ---
 
 ## Tasks
 
-### Task 1 -- Easy: Single-Metric Computation
+### Task 1 — Easy: Single-Metric Computation
 
-**Description:** Compute a standard financial metric for a single company. Requires 1-2 data fetches and one calculation step.
+**Description:** Compute a standard financial metric for a single company. Requires 1–2 data fetches and one calculation step.
 
 **Example prompt:**
 > *"What was Apple's net profit margin for fiscal year 2022? Express as a percentage rounded to 2 decimal places."*
 
-**Expected trajectory:** `get_income_statement` -> `compute` -> `submit_answer` (3 steps, max 10)
+**Expected trajectory:** `get_income_statement` → `compute` → `submit_answer` (3 steps, max 10)
 
 **Grader:**
 
@@ -175,18 +179,18 @@ All monetary figures are in millions USD. Data is synthetic but internally consi
 |---|---|
 | < 0.05% | 1.00 |
 | < 0.50% | 0.50 |
-| >= 0.50% | 0.00 |
+| ≥ 0.50% | 0.00 |
 
 ---
 
-### Task 2 -- Medium: Multi-Company Ratio Comparison
+### Task 2 — Medium: Multi-Company Ratio Comparison
 
 **Description:** Compare a valuation ratio across 3 companies against their sector median. Identify which is most attractive.
 
 **Example prompt:**
 > *"Among Microsoft, Google, and Meta, which had the most favorable EV/EBITDA relative to the tech sector median in 2023? By how many points did it differ?"*
 
-**Expected trajectory:** `get_ratios` x3 -> `compare_to_sector` x3 -> `compute` -> `submit_answer` (~8 steps, max 20)
+**Expected trajectory:** `get_ratios` ×3 → `compare_to_sector` ×3 → `compute` → `submit_answer` (~8 steps, max 20)
 
 **Grader:**
 
@@ -194,18 +198,18 @@ All monetary figures are in millions USD. Data is synthetic but internally consi
 |---|---|
 | Correct company identified | 0.40 |
 | Correct sector delta (within 0.5) | 0.40 |
-| Efficiency bonus (steps <= 10) | 0.20 |
+| Efficiency bonus (steps ≤ 10) | 0.20 |
 
 ---
 
-### Task 3 -- Hard: Multi-Year Anomaly Detection
+### Task 3 — Hard: Multi-Year Anomaly Detection
 
 **Description:** Identify anomalous financial patterns across 4 years for multiple companies, requiring cross-referencing cash flow and ratio data.
 
 **Example prompt:**
-> *"Among Tesla, Ford, and GM -- which had negative free cash flow in at least 2 of 4 fiscal years 2020-2023, AND had a P/E ratio above 30 in any of those years?"*
+> *"Among Tesla, Ford, and GM — which had negative free cash flow in at least 2 of 4 fiscal years 2020–2023, AND had a P/E ratio above 30 in any of those years?"*
 
-**Expected trajectory:** `get_cash_flow` x12 + `get_ratios` x12 -> cross-reference -> `submit_answer` (~28 steps, max 40)
+**Expected trajectory:** `get_cash_flow` ×12 + `get_ratios` ×12 → cross-reference → `submit_answer` (~28 steps, max 40)
 
 **Grader:**
 
@@ -214,7 +218,7 @@ All monetary figures are in millions USD. Data is synthetic but internally consi
 | Correct companies identified | 0.30 |
 | Correct FCF-negative years (partial per company/year) | 0.30 |
 | Correct P/E > 30 years (partial per company/year) | 0.30 |
-| Efficiency bonus (steps <= 20) | 0.10 |
+| Efficiency bonus (steps ≤ 20) | 0.10 |
 
 ---
 
@@ -225,12 +229,12 @@ Dense rewards issued at every step.
 | Signal | Reward | Condition |
 |--------|--------|-----------|
 | Relevant fetch | +0.05 | Fetched data the task requires |
-| Irrelevant fetch | -0.02 | Fetched data unrelated to task |
-| Duplicate fetch | -0.01 | Same tool + ticker + year called twice |
+| Irrelevant fetch | −0.02 | Fetched data unrelated to task |
+| Duplicate fetch | −0.01 | Same tool + ticker + year called twice |
 | Correct intermediate | +0.10 | `compute` result matches expected value |
-| Blind submit | -0.05 | `submit_answer` with no prior data fetches |
-| Terminal (accuracy) | 0.0-0.70 | Scaled from grader score |
-| Efficiency bonus | +0.10 | Completed in <= 60% of max steps |
+| Blind submit | −0.05 | `submit_answer` with no prior data fetches |
+| Terminal (accuracy) | 0.0–0.70 | Scaled from grader score |
+| Efficiency bonus | +0.10 | Completed in ≤ 60% of max steps |
 
 Total episode reward clipped to `[0.0, 1.0]`.
 
@@ -288,15 +292,15 @@ with FinQueryEnv(base_url="https://ashutosh887-finquery.hf.space").sync() as env
         ticker="AAPL",
         year=2022
     ))
-    print(result.reward)  # +0.05 for relevant fetch
+    print(result.reward)
 
     result = env.step(FinQueryAction(
         action_type="submit_answer",
         answer=25.31,
         reasoning="Net income / Revenue = 99803 / 394328 * 100"
     ))
-    print(result.reward)  # terminal reward
-    print(result.done)    # True
+    print(result.reward)
+    print(result.done)
 ```
 
 ### WebSocket
