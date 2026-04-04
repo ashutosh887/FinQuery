@@ -1,3 +1,17 @@
+
+---
+title: FinQuery
+emoji: 📊
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+tags:
+  - openenv
+license: mit
+short_description: An OpenEnv-compatible RL environment simulating a financial data terminal for training agents on multi-step analytical reasoning.
+---
+
 # FinQuery
 
 > An OpenEnv-compatible RL environment simulating a financial data terminal for training agents on multi-step analytical reasoning.
