@@ -1,267 +1,208 @@
-#!/usr/bin/env python3
-"""FinQuery inference script — runs an LLM agent against the deployed FinQuery environment.
+"""
+FinQuery Inference Script
+Scaler OpenEnv Hackathon — Round 1
 
-Required environment variables:
-    API_BASE_URL   — Base URL of the deployed FinQuery HF Space (e.g. https://ashutosh887-finquery.hf.space)
-    MODEL_NAME     — LLM model name (e.g. gpt-4o-mini)
-    HF_TOKEN       — HuggingFace token for Space auth and/or OpenAI-compatible inference
+Mandatory env vars:
+  API_BASE_URL  - LLM API endpoint
+  MODEL_NAME    - Model identifier
+  HF_TOKEN      - HuggingFace / API key
 
-Optional:
-    OPENAI_API_KEY   — Explicit OpenAI API key (falls back to HF_TOKEN)
-    OPENAI_BASE_URL  — Override base URL for the LLM endpoint (for HF Inference Endpoints)
+Stdout format:
+  [START] task=<task_id> env=finquery model=<model>
+  [STEP]  step=<n> action=<action> reward=<0.00> done=<true|false> error=<null|msg>
+  [END]   success=<true|false> steps=<n> score=<0.000> rewards=<r1,r2,...>
 """
 
-import json
 import os
-import re
-import sys
-import time
-
-import requests
+import json
+from typing import List, Optional
 from openai import OpenAI
 
-# ---------------------------------------------------------------------------
-# Configuration
-# ---------------------------------------------------------------------------
+# -- Environment config -------------------------------------------------------
+SPACE_URL = os.getenv("SPACE_URL", "https://ashutosh887-finquery.hf.space")
+API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+HF_TOKEN = os.getenv("HF_TOKEN") or os.getenv("API_KEY", "")
+BENCHMARK = "finquery"
+TASK_IDS = ["task1_easy", "task2_medium", "task3_hard"]
+SUCCESS_THRESHOLD = 0.3
+# ------------------------------------------------------------------------------
 
-API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:8000").rstrip("/")
-MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-4o-mini")
-HF_TOKEN = os.environ.get("HF_TOKEN", "")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "") or HF_TOKEN
-OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL")
+SYSTEM_PROMPT = """You are a financial analyst at a data terminal.
+Answer financial questions by calling tools in sequence.
+Always fetch data before computing. Never guess.
 
-MAX_RETRIES_HEALTH = 12  # up to ~2 min waiting for cold-start
-RETRY_DELAY = 10  # seconds between health retries
-
-TASKS = [
-    ("task1_easy", "easy"),
-    ("task2_medium", "medium"),
-    ("task3_hard", "hard"),
-]
-
-# ---------------------------------------------------------------------------
-# System prompt — identical structure to _baseline_runner.py
-# ---------------------------------------------------------------------------
-
-SYSTEM_PROMPT = (
-    "You are a financial analyst using a data terminal. You must answer "
-    "financial questions by fetching data and computing results.\n\n"
-    "Available actions (respond with ONLY a JSON object, no other text):\n"
-    '- {"action_type": "get_income_statement", "ticker": "AAPL", "year": 2022}\n'
-    '- {"action_type": "get_balance_sheet", "ticker": "AAPL", "year": 2022}\n'
-    '- {"action_type": "get_cash_flow", "ticker": "AAPL", "year": 2022}\n'
-    '- {"action_type": "get_price_history", "ticker": "AAPL", "years": [2020, 2021, 2022]}\n'
-    '- {"action_type": "get_ratios", "ticker": "AAPL", "year": 2022}\n'
-    '- {"action_type": "compare_to_sector", "ticker": "AAPL", "metric": "pe_ratio", "year": 2022}\n'
-    '- {"action_type": "compute", "expression": "99803 / 394328 * 100"}\n'
-    '- {"action_type": "submit_answer", "answer": YOUR_ANSWER}\n\n'
-    "Rules:\n"
-    "1. Fetch ALL data you need BEFORE computing or submitting.\n"
-    "2. Use the compute tool for arithmetic — never guess numbers.\n"
-    "3. Submit your final answer only when you have verified it.\n"
-    "4. Respond with ONLY a valid JSON action object, nothing else."
-)
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
+Respond ONLY with valid JSON matching this schema:
+{
+  "action_type": "get_income_statement|get_balance_sheet|get_cash_flow|get_price_history|get_ratios|compare_to_sector|compute|submit_answer",
+  "ticker": "AAPL",
+  "year": 2022,
+  "years": [2020, 2021, 2022, 2023],
+  "metric": "pe_ratio",
+  "expression": "99803/394328*100",
+  "answer": 25.31,
+  "reasoning": "brief explanation"
+}
+Include only fields relevant to your chosen action_type.
+For submit_answer: include "answer" with your final answer value.
+For compute: include "expression" with a valid arithmetic expression.
+For data fetches: include "ticker" and "year" (or "years" for price_history).
+"""
 
 
-def _env_headers() -> dict:
-    """Build auth headers for HF Space requests."""
-    headers = {"Content-Type": "application/json"}
-    if HF_TOKEN:
-        headers["Authorization"] = f"Bearer {HF_TOKEN}"
-    return headers
+# -- Logging helpers -----------------------------------------------------------
+def log_start(task: str, model: str) -> None:
+    print(f"[START] task={task} env={BENCHMARK} model={model}", flush=True)
 
 
-def _env_request(method: str, endpoint: str, json_body=None, params=None) -> dict:
-    """Make an authenticated request to the FinQuery environment."""
-    url = f"{API_BASE_URL}{endpoint}"
-    resp = requests.request(
-        method,
-        url,
-        json=json_body,
-        params=params,
-        headers=_env_headers(),
-        timeout=60,
+def log_step(step: int, action: str, reward: float, done: bool, error: Optional[str]) -> None:
+    error_val = error if error else "null"
+    done_val = str(done).lower()
+    action_clean = action.replace("\n", " ").replace("\r", "")[:200]
+    print(
+        f"[STEP] step={step} action={action_clean} reward={reward:.2f} done={done_val} error={error_val}",
+        flush=True,
     )
-    resp.raise_for_status()
-    return resp.json()
 
 
-def _extract_json(text: str) -> dict:
-    """Extract a JSON object from LLM response text."""
-    text = text.strip()
-    # Try direct parse
-    if text.startswith("{"):
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError:
-            pass
-    # Try fenced code block
-    match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
-    if match:
-        try:
-            return json.loads(match.group(1))
-        except json.JSONDecodeError:
-            pass
-    # Try first JSON object in text
-    match = re.search(r"\{[^{}]*\}", text)
-    if match:
-        try:
-            return json.loads(match.group(0))
-        except json.JSONDecodeError:
-            pass
-    raise ValueError(f"Could not extract JSON from response: {text[:200]}")
+def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> None:
+    rewards_str = ",".join(f"{r:.2f}" for r in rewards)
+    print(
+        f"[END] success={str(success).lower()} steps={steps} score={score:.3f} rewards={rewards_str}",
+        flush=True,
+    )
+# ------------------------------------------------------------------------------
 
 
-def _wait_for_server() -> None:
-    """Wait for the environment server to be healthy (handles HF cold starts)."""
-    for attempt in range(1, MAX_RETRIES_HEALTH + 1):
-        try:
-            resp = requests.get(
-                f"{API_BASE_URL}/health",
-                headers=_env_headers(),
-                timeout=15,
-            )
-            if resp.status_code == 200 and resp.json().get("status") == "healthy":
-                return
-        except (requests.ConnectionError, requests.Timeout):
-            pass
-        print(
-            f"[WAIT] Environment not ready (attempt {attempt}/{MAX_RETRIES_HEALTH}), "
-            f"retrying in {RETRY_DELAY}s...",
-            file=sys.stderr,
-        )
-        time.sleep(RETRY_DELAY)
-    print(f"Error: Environment at {API_BASE_URL} not reachable after retries", file=sys.stderr)
-    sys.exit(1)
+def get_llm_action(client: OpenAI, task_description: str, history: List[dict]) -> tuple:
+    """Call LLM and return parsed action dict."""
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages.extend(history)
+    if not history:
+        messages.append({"role": "user", "content": task_description})
 
-
-# ---------------------------------------------------------------------------
-# Agent loop
-# ---------------------------------------------------------------------------
-
-
-def run_task(client: OpenAI, task_id: str, difficulty: str) -> float:
-    """Run a single task episode and return the total reward."""
-    # Reset episode
-    result = _env_request("POST", "/reset", {"task_id": task_id})
-    episode_id = result["episode_id"]
-    obs = result["observation"]
-
-    print(f"[START] episode_id={episode_id} task_id={task_id} difficulty={difficulty}")
-
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": f"Task: {obs['task_description']}"},
-    ]
-
-    total_reward = 0.0
-    step_num = 0
-    max_turns = 50  # safety ceiling across all tasks
-
-    for _ in range(max_turns):
-        if obs.get("episode_status") != "ongoing":
-            break
-
-        # Ask LLM for next action
-        response = client.chat.completions.create(
+    try:
+        completion = client.chat.completions.create(
             model=MODEL_NAME,
             messages=messages,
-            temperature=0.0,
-            max_tokens=512,
+            temperature=0.1,
+            max_tokens=300,
+            response_format={"type": "json_object"},
         )
-        assistant_msg = response.choices[0].message.content or ""
-        messages.append({"role": "assistant", "content": assistant_msg})
+        raw = (completion.choices[0].message.content or "{}").strip()
+        return json.loads(raw), raw
+    except Exception as e:
+        fallback = {"action_type": "submit_answer", "answer": 0, "reasoning": f"error: {e}"}
+        return fallback, json.dumps(fallback)
 
-        # Parse action JSON
-        try:
-            action = _extract_json(assistant_msg)
-        except ValueError:
-            messages.append({
-                "role": "user",
-                "content": "Invalid response. Respond with ONLY a valid JSON action object.",
-            })
-            continue
 
-        # Execute step
-        step_result = _env_request("POST", "/step", {
-            "episode_id": episode_id,
-            "action": action,
-        })
-        obs = step_result["observation"]
-        reward = step_result["reward"]
-        total_reward += reward
-        step_num = obs["steps_taken"]
+def run_episode(task_id: str, client: OpenAI) -> None:
+    """Run one full episode for a task. Emits START, STEPs, END to stdout."""
+    import httpx
 
-        action_type = action.get("action_type", "unknown")
-        print(
-            f"[STEP] step={step_num} action={action_type} "
-            f"reward={reward} score_so_far={round(total_reward, 4)}"
+    log_start(task=task_id, model=MODEL_NAME)
+
+    rewards: List[float] = []
+    steps_taken = 0
+    success = False
+    score = 0.0
+
+    try:
+        # Reset
+        resp = httpx.post(
+            f"{SPACE_URL}/reset",
+            json={"task_id": task_id},
+            timeout=30,
         )
+        resp.raise_for_status()
+        data = resp.json()
+        episode_id = data.get("episode_id")
+        obs = data.get("observation", {})
+        task_description = obs.get("task_description", "")
+        max_steps = obs.get("steps_remaining", 40)
+        done = data.get("done", False)
 
-        if step_result["done"]:
-            break
+        history = [{"role": "user", "content": task_description}]
 
-        # Feed observation back to the LLM
-        obs_parts = []
-        if obs.get("tool_result"):
-            obs_parts.append(f"Result: {json.dumps(obs['tool_result'])}")
-        if obs.get("tool_error"):
-            obs_parts.append(f"Error: {obs['tool_error']}")
-        if obs.get("feedback"):
-            obs_parts.append(f"Feedback: {obs['feedback']}")
-        obs_parts.append(
-            f"Steps: {obs['steps_taken']}/{obs['steps_taken'] + obs['steps_remaining']}"
-        )
-        messages.append({"role": "user", "content": "\n".join(obs_parts)})
+        for step in range(1, max_steps + 1):
+            if done:
+                break
 
-    print(
-        f"[END] episode_id={episode_id} final_score={round(total_reward, 4)} "
-        f"steps_taken={step_num}"
-    )
-    return total_reward
+            # Get LLM action
+            action_dict, action_raw = get_llm_action(client, task_description, history)
+
+            # Add to history
+            history.append({"role": "assistant", "content": action_raw})
+
+            # Step the environment
+            error_msg = None
+            try:
+                step_resp = httpx.post(
+                    f"{SPACE_URL}/step",
+                    json={"episode_id": episode_id, "action": action_dict},
+                    timeout=30,
+                )
+                step_resp.raise_for_status()
+                step_data = step_resp.json()
+
+                reward = float(step_data.get("reward", 0.0))
+                done = bool(step_data.get("done", False))
+                step_obs = step_data.get("observation", {})
+                tool_error = step_obs.get("tool_error")
+                tool_result = step_obs.get("tool_result")
+
+                # Build context for next LLM call
+                context = {
+                    "tool_result": tool_result,
+                    "tool_error": tool_error,
+                    "steps_remaining": step_obs.get("steps_remaining", 0),
+                    "episode_status": step_obs.get("episode_status", "ongoing"),
+                }
+                history.append({"role": "user", "content": json.dumps(context)})
+
+                if tool_error:
+                    error_msg = tool_error
+
+            except Exception as e:
+                reward = 0.0
+                done = True
+                error_msg = str(e)
+
+            rewards.append(reward)
+            steps_taken = step
+            log_step(step=step, action=action_raw, reward=reward, done=done, error=error_msg)
+
+            if done:
+                break
+
+        # Compute score
+        total_reward = sum(rewards)
+        score = min(max(total_reward, 0.0), 1.0)
+        success = score >= SUCCESS_THRESHOLD
+
+    except Exception as e:
+        steps_taken = steps_taken or 0
+        error_log = str(e)
+        if steps_taken == 0:
+            rewards = [0.0]
+            log_step(step=1, action="reset_failed", reward=0.0, done=True, error=error_log)
+            steps_taken = 1
+        score = 0.0
+        success = False
+
+    finally:
+        log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
+def main() -> None:
+    if not HF_TOKEN:
+        raise SystemExit("HF_TOKEN not set — export HF_TOKEN=your_token")
 
+    client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
-def main():
-    if not OPENAI_API_KEY:
-        print(
-            "Error: Set OPENAI_API_KEY or HF_TOKEN environment variable",
-            file=sys.stderr,
-        )
-        sys.exit(1)
-
-    # Wait for HF Space to wake up
-    _wait_for_server()
-
-    # Build OpenAI client
-    client_kwargs = {"api_key": OPENAI_API_KEY}
-    if OPENAI_BASE_URL:
-        client_kwargs["base_url"] = OPENAI_BASE_URL
-    client = OpenAI(**client_kwargs)
-
-    all_scores = {}
-    for task_id, difficulty in TASKS:
-        try:
-            score = run_task(client, task_id, difficulty)
-            all_scores[task_id] = round(score, 4)
-        except Exception as e:
-            print(f"Error on {task_id}: {e}", file=sys.stderr)
-            sys.exit(1)
-
-    # Summary
-    print("\n--- Summary ---")
-    for task_id, score in all_scores.items():
-        print(f"  {task_id}: {score}")
-    avg = sum(all_scores.values()) / len(all_scores) if all_scores else 0
-    print(f"  average: {round(avg, 4)}")
+    for task_id in TASK_IDS:
+        run_episode(task_id=task_id, client=client)
+        print("", flush=True)  # blank line between tasks
 
 
 if __name__ == "__main__":
