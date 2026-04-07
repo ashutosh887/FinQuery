@@ -177,7 +177,7 @@ def run_episode(task_id: str, client: OpenAI) -> None:
 
         # Compute score
         total_reward = sum(rewards)
-        score = min(max(total_reward, 0.0), 1.0)
+        score = max(0.01, min(0.99, total_reward))
         success = score >= SUCCESS_THRESHOLD
 
     except Exception as e:
@@ -187,7 +187,7 @@ def run_episode(task_id: str, client: OpenAI) -> None:
             rewards = [0.0]
             log_step(step=1, action="reset_failed", reward=0.0, done=True, error=error_log)
             steps_taken = 1
-        score = 0.0
+        score = 0.01
         success = False
 
     finally:

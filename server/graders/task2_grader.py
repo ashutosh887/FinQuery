@@ -36,7 +36,7 @@ def grade(answer, ground_truth=None, step_count=None, max_steps=20):
         company = answer.strip().upper()
         delta = None
     else:
-        return {"score": 0.0, "breakdown": {"error": "invalid answer format"}}
+        return {"score": 0.01, "breakdown": {"error": "invalid answer format"}}
 
     if company == gt["correct_company"]:
         breakdown["correct_company"] = 0.40
@@ -63,4 +63,4 @@ def grade(answer, ground_truth=None, step_count=None, max_steps=20):
     else:
         breakdown["efficiency"] = 0.0
 
-    return {"score": round(score, 4), "breakdown": breakdown}
+    return {"score": max(0.01, min(0.99, round(score, 4))), "breakdown": breakdown}

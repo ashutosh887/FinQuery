@@ -18,7 +18,7 @@ def grade(answer, ground_truth=None, **kwargs):
     try:
         val = float(answer)
     except (TypeError, ValueError):
-        return {"score": 0.0, "breakdown": {"accuracy": 0.0, "reason": "non-numeric answer"}}
+        return {"score": 0.01, "breakdown": {"accuracy": 0.0, "reason": "non-numeric answer"}}
 
     diff = abs(val - gt["answer"])
     if diff <= gt["tolerance_exact"]:
@@ -29,7 +29,7 @@ def grade(answer, ground_truth=None, **kwargs):
         accuracy = 0.0
 
     return {
-        "score": accuracy,
+        "score": max(0.01, min(0.99, accuracy)),
         "breakdown": {
             "accuracy": accuracy,
             "expected": gt["answer"],

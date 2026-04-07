@@ -47,7 +47,7 @@ def grade(answer, ground_truth=None, **kwargs):
     breakdown = {}
 
     if not isinstance(answer, dict):
-        return {"score": 0.0, "breakdown": {"error": "expected dict answer"}}
+        return {"score": 0.01, "breakdown": {"error": "expected dict answer"}}
 
     raw_companies = answer.get("qualifying_companies", [])
     if isinstance(raw_companies, str):
@@ -76,4 +76,4 @@ def grade(answer, ground_truth=None, **kwargs):
 
     # Efficiency bonus (0.10) handled by reward engine, not grader.
 
-    return {"score": round(score, 4), "breakdown": breakdown}
+    return {"score": max(0.01, min(0.99, round(score, 4))), "breakdown": breakdown}
