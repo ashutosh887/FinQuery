@@ -39,6 +39,7 @@ inference:
     - API_BASE_URL
     - MODEL_NAME
     - HF_TOKEN
+    - SPACE_URL
   timeout: 1200
   resources:
     vcpu: 2

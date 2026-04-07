@@ -2,7 +2,7 @@
 
 Step rewards track data-fetch relevance and computation correctness.
 Terminal reward is scaled grader accuracy + efficiency bonus.
-Episode total is clipped to [0.0, 1.0].
+Episode total is clipped to (0.01, 0.99).
 """
 
 from __future__ import annotations
