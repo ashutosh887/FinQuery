@@ -177,9 +177,9 @@ All monetary figures are in millions USD. Data is synthetic but internally consi
 
 | Error range | Score |
 |---|---|
-| < 0.05% | 1.00 |
+| < 0.05% | 0.99 |
 | < 0.50% | 0.50 |
-| ≥ 0.50% | 0.00 |
+| ≥ 0.50% | 0.01 |
 
 ---
 
@@ -233,10 +233,10 @@ Dense rewards issued at every step.
 | Duplicate fetch | −0.01 | Same tool + ticker + year called twice |
 | Correct intermediate | +0.10 | `compute` result matches expected value |
 | Blind submit | −0.05 | `submit_answer` with no prior data fetches |
-| Terminal (accuracy) | 0.0–0.70 | Scaled from grader score |
+| Terminal (accuracy) | 0.01–0.69 | Scaled from grader score (clamped) |
 | Efficiency bonus | +0.10 | Completed in ≤ 60% of max steps |
 
-Total episode reward clipped to `[0.0, 1.0]`.
+Total episode reward clipped to `(0.01, 0.99)`.
 
 ---
 

@@ -150,7 +150,7 @@ curl http://localhost:8000/tasks
 | `/step` | POST | Requires `episode_id` + `FinQueryAction`, returns observation + reward + done |
 | `/state` | GET | `FinQueryState` for an episode (query param: `episode_id`) |
 | `/tasks` | GET | List of 3 tasks with `id`, `name`, `difficulty`, `action_schema` |
-| `/grader` | POST | Score breakdown dict with `score` in `[0,1]` |
+| `/grader` | POST | Score breakdown dict with `score` in `(0.01, 0.99)` |
 | `/baseline` | POST | Runs baseline agent, returns scores |
 | `/history` | GET | Episode history from SQLite |
 | `/leaderboard` | GET | Top scores grouped by agent + task |
@@ -216,3 +216,64 @@ python scripts/validate_data.py && echo "Data OK"
 openenv validate && echo "OpenEnv OK"
 docker build -t finquery . && echo "Docker OK"
 ```
+
+---
+
+## Phase 2 Validation Fixes
+
+### Score clamping rule
+
+All task/episode scores returned to the caller must be strictly in the open interval `(0, 1)` — never exactly `0.0` or `1.0`. Clamp at the outermost return point:
+
+```python
+score = max(0.01, min(0.99, score))
+```
+
+**Where clamping is applied (defense in depth):**
+
+- `server/graders/task1_grader.py` — both error return (line 21) and normal return (line 32)
+- `server/graders/task2_grader.py` — error return (line 39) and final return (line 66)
+- `server/graders/task3_grader.py` — error return (line 50) and final return (line 79)
+- `server/rewards/reward_engine.py` — `compute_episode_total()` clamps to `[0.01, 0.99]`
+- `server/app.py` — `/grader` endpoint clamps before returning `GraderResponse`
+- `server/finquery_environment.py` — clamps `grader_score` (line 247), `clamped_total` (line 270), and `clamped_reward` on max_steps failure (line 330)
+- `inference.py` — clamps score printed to stdout (line 180) and exception fallback (line 190)
+
+**Do NOT clamp** per-step intermediate rewards (`+0.05`, `-0.02`, etc.) — only final task/episode scores.
+
+### inference.py environment variable contract
+
+```python
+API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME   = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+HF_TOKEN     = os.getenv("HF_TOKEN") or os.getenv("API_KEY", "")
+```
+
+- Must use `from openai import OpenAI` — no httpx/requests for LLM calls
+- Client: `OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)`
+- All completions: `model=MODEL_NAME`
+- No hardcoded API keys, model names, or API URLs anywhere
+
+### Stdout log format
+
+Strict `[START]`, `[STEP]`, `[END]` format via `print()` with `flush=True`. Never `logging` or `stderr`.
+
+```
+[START] task=<task_id> env=finquery model=<model>
+[STEP] step=<n> action=<action> reward=<0.00> done=<true|false> error=<null|msg>
+[END] success=<true|false> steps=<n> score=<0.000> rewards=<r1,r2,...>
+```
+
+### Infra constraints
+
+- 2 vCPU, 8 GB RAM
+- Inference must complete in < 20 minutes
+- Docker image must build cleanly on constrained machine
+
+### Danger zones — things that silently fail Phase 2
+
+- Returning score `0.0` or `1.0` on any path (malformed input, error, perfect answer)
+- Hardcoded API keys, model names, or `api.openai.com` in `inference.py`
+- `print()` to stderr or using `logging` for `[START]`/`[STEP]`/`[END]` lines
+- Docker build failing or OOMing on 8 GB machine
+- inference.py runtime exceeding 20 minutes
