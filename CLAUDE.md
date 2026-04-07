@@ -246,7 +246,7 @@ score = max(0.01, min(0.99, score))
 ```python
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME   = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
-HF_TOKEN     = os.getenv("HF_TOKEN") or os.getenv("API_KEY", "")
+HF_TOKEN     = os.getenv("HF_TOKEN")
 ```
 
 - Must use `from openai import OpenAI` — no httpx/requests for LLM calls
