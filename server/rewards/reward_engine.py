@@ -74,5 +74,5 @@ def compute_terminal_reward(
 
 
 def compute_episode_total(cumulative_step_reward: float, terminal_reward: float) -> float:
-    """Clip total episode reward to [0.0, 1.0]."""
-    return max(0.0, min(1.0, cumulative_step_reward + terminal_reward))
+    """Clip total episode reward to (0, 1) — strictly inside the interval."""
+    return max(0.01, min(0.99, cumulative_step_reward + terminal_reward))

@@ -244,7 +244,7 @@ class FinQueryEnvironment:
                     step_count=ep["step_count"],
                     max_steps=ep["max_steps"],
                 )
-                grader_score = grader_result["score"]
+                grader_score = max(0.01, min(0.99, grader_result["score"]))
 
                 terminal_reward = compute_terminal_reward(
                     grader_score=grader_score,
@@ -267,20 +267,21 @@ class FinQueryEnvironment:
                     ep["cumulative_reward"] + step_reward, terminal_reward
                 )
 
+                clamped_total = max(0.01, min(0.99, ep["cumulative_reward"]))
                 tool_result = {
                     "grader_score": grader_score,
                     "breakdown": grader_result["breakdown"],
                     "terminal_reward": round(terminal_reward, 4),
-                    "episode_total": round(ep["cumulative_reward"], 4),
+                    "episode_total": round(clamped_total, 4),
                 }
 
                 finish_episode(
-                    episode_id, ep["step_count"], ep["cumulative_reward"],
+                    episode_id, ep["step_count"], clamped_total,
                     answer, "answered",
                 )
                 record_leaderboard(
                     ep["agent_name"], ep["task_id"],
-                    ep["cumulative_reward"], ep["step_count"],
+                    clamped_total, ep["step_count"],
                 )
 
                 response = self._build_response(
@@ -326,8 +327,9 @@ class FinQueryEnvironment:
             status = "failed_max_steps"
             done = True
             ep["done"] = True
+            clamped_reward = max(0.01, min(0.99, ep["cumulative_reward"]))
             finish_episode(
-                episode_id, ep["step_count"], ep["cumulative_reward"],
+                episode_id, ep["step_count"], clamped_reward,
                 None, "failed_max_steps",
             )
             del self._episodes[episode_id]

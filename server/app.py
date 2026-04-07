@@ -128,7 +128,8 @@ async def grader(req: GraderRequest):
         raise HTTPException(status_code=400, detail=f"Unknown task_id: {req.task_id}")
     task = TASKS[req.task_id]
     result = task["grader"].grade(req.final_answer)
-    return GraderResponse(score=result["score"], breakdown=result["breakdown"]).model_dump()
+    clamped_score = max(0.01, min(0.99, result["score"]))
+    return GraderResponse(score=clamped_score, breakdown=result["breakdown"]).model_dump()
 
 
 @app.post("/baseline")
