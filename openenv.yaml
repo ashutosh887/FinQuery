@@ -1,9 +1,11 @@
 name: finquery
-version: 0.1.0
+version: 0.2.0
 description: >
   RL environment simulating a financial data terminal for training agents
-  on multi-step analytical reasoning with dense per-step reward signals.
-  Agents must navigate tool calls to answer verifiable financial questions.
+  on multi-step analytical reasoning. 25 companies across 7 sectors,
+  9 years of data (2017-2025), with procedurally generated tasks.
+  Supports configurable reset with seeds, batch generation, composite
+  task mixing, and dense per-step reward signals.
 author: Dhurandhar Team
 tags:
   - openenv
@@ -11,21 +13,22 @@ tags:
   - reasoning
   - enterprise
   - multi-step
+  - procedural-generation
 tasks:
   - id: task1_easy
     name: Single-Metric Computation
     difficulty: easy
-    description: "Compute Apple's net profit margin for FY2022"
+    description: "Compute a randomly selected financial metric for a random company and year. 11 metrics x 25 tickers x 9 years = 2475+ unique tasks."
     max_steps: 10
   - id: task2_medium
     name: Multi-Company Ratio Comparison
     difficulty: medium
-    description: "Compare EV/EBITDA across MSFT, GOOGL, META vs sector median"
+    description: "Compare a ratio across companies within a sector vs sector median. 7 sectors x company combos x 5 ratios x 9 years = hundreds of unique tasks."
     max_steps: 20
   - id: task3_hard
     name: Multi-Year Anomaly Detection
     difficulty: hard
-    description: "Detect FCF/PE anomalies across TSLA, F, GM over 2020-2024"
+    description: "Detect financial anomaly patterns across 3 companies over a multi-year window. 6 anomaly patterns x company combos x year windows = thousands of unique tasks."
     max_steps: 40
 action_schema: FinQueryAction
 observation_schema: FinQueryObservation

@@ -1,7 +1,7 @@
 """Core FinQuery environment — reset(), step(), state().
 
-Manages episode state, routes actions to tools, computes rewards.
-Supports concurrent episodes via episode_id-based session management.
+Supports concurrent episodes, procedural task generation, seed-based
+reproducibility, batch iteration, and composite difficulty mixing.
 """
 
 from __future__ import annotations
@@ -9,6 +9,7 @@ from __future__ import annotations
 import ast
 import json
 import operator
+import time
 import uuid
 from pathlib import Path
 from typing import Any
@@ -25,18 +26,19 @@ from server.tasks.task_generator import (
     EasyTaskGenerator,
     HardTaskGenerator,
     MediumTaskGenerator,
+    generate_batch,
+    generate_composite_batch,
 )
 
 DATA_DIR = Path(__file__).parent / "data"
 
-# Static metadata for /tasks endpoint and task_id validation
 TASK_META = {
     "task1_easy": {
         "name": "Single-Metric Computation",
         "difficulty": "easy",
         "description": (
             "Compute a financial metric for a randomly selected company and year. "
-            "Metrics include margins, ratios, and returns. Each reset generates a unique question."
+            "11 metric types across 25 tickers and 9 years. Each reset generates a unique question."
         ),
         "max_steps": 10,
     },
@@ -44,8 +46,8 @@ TASK_META = {
         "name": "Multi-Company Ratio Comparison",
         "difficulty": "medium",
         "description": (
-            "Compare a financial ratio across multiple companies against their sector median. "
-            "Identify which company is most favorably positioned. Each reset generates a unique question."
+            "Compare a financial ratio across companies within a sector against the sector median. "
+            "7 sectors, 5 ratios, 9 years. Each reset generates a unique question."
         ),
         "max_steps": 20,
     },
@@ -53,21 +55,19 @@ TASK_META = {
         "name": "Multi-Year Anomaly Detection",
         "difficulty": "hard",
         "description": (
-            "Detect financial anomaly patterns across multiple companies over a multi-year window. "
-            "Identify qualifying companies and supporting evidence. Each reset generates a unique question."
+            "Detect financial anomaly patterns across 3 companies over a multi-year window. "
+            "6 anomaly patterns, configurable thresholds. Each reset generates a unique question."
         ),
         "max_steps": 40,
     },
 }
 
-# Grader dispatch by grader_id stored in each episode
 GRADERS = {
     "task1": task1_grader,
     "task2": task2_grader,
     "task3": task3_grader,
 }
 
-# Safe expression evaluator — restricted to arithmetic only
 _ALLOWED_OPS = {
     ast.Add: operator.add,
     ast.Sub: operator.sub,
@@ -78,7 +78,6 @@ _ALLOWED_OPS = {
 
 
 def _safe_eval(expr: str) -> float:
-    """Evaluate a simple arithmetic expression safely."""
     try:
         tree = ast.parse(expr, mode="eval")
     except SyntaxError as e:
@@ -104,8 +103,6 @@ def _eval_node(node) -> float:
 
 
 class FinQueryEnvironment:
-    """Core environment managing multiple concurrent episodes."""
-
     def __init__(self):
         with open(DATA_DIR / "financials.json") as f:
             self.data: dict = json.load(f)
@@ -113,28 +110,71 @@ class FinQueryEnvironment:
             self.sectors: dict = json.load(f)
         self._episodes: dict[str, dict] = {}
 
-        # Initialize procedural task generators
         self._generators = {
             "task1_easy": EasyTaskGenerator(self.data, self.sectors),
             "task2_medium": MediumTaskGenerator(self.data, self.sectors),
             "task3_hard": HardTaskGenerator(self.data, self.sectors),
         }
+        self._current_batch: list = []
+        self._batch_index: int = 0
 
-    def reset(self, task_id: str | None = None, agent_name: str = "anonymous") -> dict:
+    def reset(
+        self,
+        task_id: str | None = None,
+        agent_name: str = "anonymous",
+        seed: int | None = None,
+        size: int | None = None,
+        config: dict | None = None,
+        task_specs: list | None = None,
+    ) -> dict:
         import random
 
+        if seed is None:
+            seed = int(time.time() * 1000) % (2**31)
+
+        new_params = task_id is not None or size is not None or task_specs is not None
+        if new_params:
+            if task_id == "composite" and task_specs:
+                self._current_batch = generate_composite_batch(
+                    self._generators, task_specs, size or 30, seed)
+                self._batch_index = 0
+            elif task_id and task_id in self._generators and size and size > 1:
+                self._current_batch = generate_batch(
+                    self._generators, task_id, size, seed)
+                self._batch_index = 0
+            elif task_id and task_id in self._generators:
+                task_instance = self._generators[task_id].generate(seed=seed)
+                return self._create_episode(task_instance, agent_name)
+            elif task_id is None:
+                task_id = random.choice(["task1_easy", "task2_medium", "task3_hard"])
+                task_instance = self._generators[task_id].generate(seed=seed)
+                return self._create_episode(task_instance, agent_name)
+            else:
+                if task_id not in TASK_META:
+                    raise ValueError(f"Unknown task_id: {task_id}. Available: {list(TASK_META.keys())}")
+                task_id = random.choice(["task1_easy", "task2_medium", "task3_hard"])
+                task_instance = self._generators[task_id].generate(seed=seed)
+                return self._create_episode(task_instance, agent_name)
+
+        if self._current_batch:
+            if self._batch_index >= len(self._current_batch):
+                self._batch_index = 0
+            task_instance = self._current_batch[self._batch_index]
+            self._batch_index += 1
+            return self._create_episode(task_instance, agent_name)
+
         if task_id is None:
-            task_id = random.choice(list(TASK_META.keys()))
-        if task_id not in TASK_META:
+            task_id = random.choice(["task1_easy", "task2_medium", "task3_hard"])
+        if task_id not in self._generators:
             raise ValueError(f"Unknown task_id: {task_id}. Available: {list(TASK_META.keys())}")
+        task_instance = self._generators[task_id].generate(seed=seed)
+        return self._create_episode(task_instance, agent_name)
 
-        # Generate a unique task instance
-        task_instance = self._generators[task_id].generate()
-
+    def _create_episode(self, task_instance, agent_name: str) -> dict:
         episode_id = str(uuid.uuid4())
         ep = {
             "episode_id": episode_id,
-            "task_id": task_id,
+            "task_id": task_instance.task_id,
             "task_difficulty": task_instance.difficulty,
             "task_description": task_instance.task_description,
             "agent_name": agent_name,
@@ -147,15 +187,15 @@ class FinQueryEnvironment:
             "final_answer": None,
             "cumulative_reward": 0.0,
             "done": False,
-            # Task instance data for grading and rewards
             "ground_truth": task_instance.ground_truth,
             "required_fetches": task_instance.required_fetches,
             "min_fetches": task_instance.min_fetches,
             "expected_intermediates": task_instance.expected_intermediates,
             "grader_id": task_instance.grader_id,
+            "task_metadata": task_instance.metadata,
         }
         self._episodes[episode_id] = ep
-        save_episode(episode_id, task_id, task_instance.difficulty, agent_name)
+        save_episode(episode_id, task_instance.task_id, task_instance.difficulty, agent_name)
 
         return {
             "episode_id": episode_id,
@@ -168,6 +208,12 @@ class FinQueryEnvironment:
                 "tickers_queried": [],
                 "episode_status": "ongoing",
                 "feedback": None,
+                "task_metadata": {
+                    "difficulty": task_instance.difficulty,
+                    "companies_involved": task_instance.relevant_tickers,
+                    "years_involved": task_instance.relevant_years,
+                    **(task_instance.metadata or {}),
+                },
             },
             "reward": 0.0,
             "done": False,
@@ -287,22 +333,12 @@ class FinQueryEnvironment:
                     "episode_total": round(clamped_total, 4),
                 }
 
-                finish_episode(
-                    episode_id, ep["step_count"], clamped_total,
-                    answer, "answered",
-                )
-                record_leaderboard(
-                    ep["agent_name"], ep["task_id"],
-                    clamped_total, ep["step_count"],
-                )
+                finish_episode(episode_id, ep["step_count"], clamped_total, answer, "answered")
+                record_leaderboard(ep["agent_name"], ep["task_id"], clamped_total, ep["step_count"])
 
                 response = self._build_response(
-                    ep,
-                    tool_result=tool_result,
-                    tool_error=None,
-                    reward=round(total_step, 4),
-                    feedback=feedback,
-                    status="answered",
+                    ep, tool_result=tool_result, tool_error=None,
+                    reward=round(total_step, 4), feedback=feedback, status="answered",
                 )
                 del self._episodes[episode_id]
                 return response
@@ -313,12 +349,8 @@ class FinQueryEnvironment:
             tool_error = str(e)
             ep["step_count"] -= 1
             return self._build_response(
-                ep,
-                tool_result=None,
-                tool_error=tool_error,
-                reward=0.0,
-                feedback=None,
-                status="ongoing",
+                ep, tool_result=None, tool_error=tool_error,
+                reward=0.0, feedback=None, status="ongoing",
             )
 
         step_reward, feedback = compute_step_reward(
@@ -340,20 +372,13 @@ class FinQueryEnvironment:
             done = True
             ep["done"] = True
             clamped_reward = max(0.01, min(0.99, ep["cumulative_reward"]))
-            finish_episode(
-                episode_id, ep["step_count"], clamped_reward,
-                None, "failed_max_steps",
-            )
+            finish_episode(episode_id, ep["step_count"], clamped_reward, None, "failed_max_steps")
             del self._episodes[episode_id]
 
         return self._build_response(
-            ep,
-            tool_result=tool_result,
-            tool_error=tool_error,
-            reward=round(step_reward, 4),
-            feedback=feedback,
-            status=status,
-            done_override=done,
+            ep, tool_result=tool_result, tool_error=tool_error,
+            reward=round(step_reward, 4), feedback=feedback,
+            status=status, done_override=done,
         )
 
     def state(self, episode_id: str | None = None) -> dict:
@@ -363,21 +388,14 @@ class FinQueryEnvironment:
             ep = list(self._episodes.values())[-1]
         else:
             return {
-                "episode_id": "",
-                "task_id": "",
-                "task_difficulty": "easy",
-                "step_count": 0,
-                "fetched_data": {},
-                "answer_submitted": False,
+                "episode_id": "", "task_id": "", "task_difficulty": "easy",
+                "step_count": 0, "fetched_data": {}, "answer_submitted": False,
                 "score_so_far": 0.0,
             }
         return {
-            "episode_id": ep["episode_id"],
-            "task_id": ep["task_id"],
-            "task_difficulty": ep["task_difficulty"],
-            "step_count": ep["step_count"],
-            "fetched_data": ep["fetched_data"],
-            "answer_submitted": ep["answer_submitted"],
+            "episode_id": ep["episode_id"], "task_id": ep["task_id"],
+            "task_difficulty": ep["task_difficulty"], "step_count": ep["step_count"],
+            "fetched_data": ep["fetched_data"], "answer_submitted": ep["answer_submitted"],
             "score_so_far": round(ep["cumulative_reward"], 4),
         }
 
@@ -403,16 +421,7 @@ class FinQueryEnvironment:
         if fetch_key not in ep["fetch_log"]:
             ep["fetch_log"].append(fetch_key)
 
-    def _build_response(
-        self,
-        ep: dict,
-        tool_result,
-        tool_error,
-        reward,
-        feedback,
-        status,
-        done_override=None,
-    ) -> dict:
+    def _build_response(self, ep, tool_result, tool_error, reward, feedback, status, done_override=None):
         done = done_override if done_override is not None else ep["done"]
         return {
             "episode_id": ep["episode_id"],
@@ -425,6 +434,7 @@ class FinQueryEnvironment:
                 "tickers_queried": list(ep["tickers_queried"]),
                 "episode_status": status,
                 "feedback": feedback,
+                "task_metadata": ep.get("task_metadata"),
             },
             "reward": reward,
             "done": done,
@@ -433,14 +443,9 @@ class FinQueryEnvironment:
     def _error_response(self, msg: str) -> dict:
         return {
             "observation": {
-                "task_description": "",
-                "tool_result": None,
-                "tool_error": msg,
-                "steps_taken": 0,
-                "steps_remaining": 0,
-                "tickers_queried": [],
-                "episode_status": "ongoing",
-                "feedback": None,
+                "task_description": "", "tool_result": None, "tool_error": msg,
+                "steps_taken": 0, "steps_remaining": 0, "tickers_queried": [],
+                "episode_status": "ongoing", "feedback": None, "task_metadata": None,
             },
             "reward": 0.0,
             "done": False,
