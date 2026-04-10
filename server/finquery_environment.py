@@ -21,54 +21,50 @@ from server.rewards.reward_engine import (
     compute_terminal_reward,
 )
 from server.database import save_episode, finish_episode, record_leaderboard
+from server.tasks.task_generator import (
+    EasyTaskGenerator,
+    HardTaskGenerator,
+    MediumTaskGenerator,
+)
 
 DATA_DIR = Path(__file__).parent / "data"
-TASKS = {
+
+# Static metadata for /tasks endpoint and task_id validation
+TASK_META = {
     "task1_easy": {
         "name": "Single-Metric Computation",
         "difficulty": "easy",
         "description": (
-            "What was Apple's net profit margin for fiscal year 2022? "
-            "Express as a percentage rounded to 2 decimal places."
+            "Compute a financial metric for a randomly selected company and year. "
+            "Metrics include margins, ratios, and returns. Each reset generates a unique question."
         ),
         "max_steps": 10,
-        "required_fetches": task1_grader.GROUND_TRUTH["required_fetches"],
-        "min_fetches": task1_grader.GROUND_TRUTH["min_fetches"],
-        "expected_intermediates": [25.31],
-        "grader": task1_grader,
     },
     "task2_medium": {
-        "name": "Multi-Company Comparison",
+        "name": "Multi-Company Ratio Comparison",
         "difficulty": "medium",
         "description": (
-            "Among Microsoft, Google, and Meta, which company had the most favorable "
-            "EV/EBITDA relative to the tech sector median in 2023? By how many points "
-            "did it differ from the sector median? Submit your answer as "
-            '{"company": "TICKER", "delta": NUMBER}.'
+            "Compare a financial ratio across multiple companies against their sector median. "
+            "Identify which company is most favorably positioned. Each reset generates a unique question."
         ),
         "max_steps": 20,
-        "required_fetches": task2_grader.GROUND_TRUTH["required_fetches"],
-        "min_fetches": task2_grader.GROUND_TRUTH["min_fetches"],
-        "expected_intermediates": [12.83, 17.34, 26.29, -5.47, -0.96, 7.99],
-        "grader": task2_grader,
     },
     "task3_hard": {
         "name": "Multi-Year Anomaly Detection",
         "difficulty": "hard",
         "description": (
-            "Among Tesla, Ford, and GM — which company had negative free cash flow in "
-            "at least 2 of the 4 fiscal years from 2020-2023, AND had a P/E ratio above "
-            "30 in any of those same years? For each qualifying company, state which "
-            "specific years had negative FCF and which years had P/E > 30. Submit as "
-            '{"qualifying_companies": ["TICKER"], "details": {"TICKER": '
-            '{"negative_fcf_years": [YEAR, ...], "pe_above_30_years": [YEAR, ...]}}}.'
+            "Detect financial anomaly patterns across multiple companies over a multi-year window. "
+            "Identify qualifying companies and supporting evidence. Each reset generates a unique question."
         ),
         "max_steps": 40,
-        "required_fetches": task3_grader.GROUND_TRUTH["required_fetches"],
-        "min_fetches": task3_grader.GROUND_TRUTH["min_fetches"],
-        "expected_intermediates": [],
-        "grader": task3_grader,
     },
+}
+
+# Grader dispatch by grader_id stored in each episode
+GRADERS = {
+    "task1": task1_grader,
+    "task2": task2_grader,
+    "task3": task3_grader,
 }
 
 # Safe expression evaluator — restricted to arithmetic only
@@ -117,24 +113,33 @@ class FinQueryEnvironment:
             self.sectors: dict = json.load(f)
         self._episodes: dict[str, dict] = {}
 
+        # Initialize procedural task generators
+        self._generators = {
+            "task1_easy": EasyTaskGenerator(self.data, self.sectors),
+            "task2_medium": MediumTaskGenerator(self.data, self.sectors),
+            "task3_hard": HardTaskGenerator(self.data, self.sectors),
+        }
+
     def reset(self, task_id: str | None = None, agent_name: str = "anonymous") -> dict:
         import random
 
         if task_id is None:
-            task_id = random.choice(list(TASKS.keys()))
-        if task_id not in TASKS:
-            raise ValueError(f"Unknown task_id: {task_id}. Available: {list(TASKS.keys())}")
+            task_id = random.choice(list(TASK_META.keys()))
+        if task_id not in TASK_META:
+            raise ValueError(f"Unknown task_id: {task_id}. Available: {list(TASK_META.keys())}")
 
-        task = TASKS[task_id]
+        # Generate a unique task instance
+        task_instance = self._generators[task_id].generate()
+
         episode_id = str(uuid.uuid4())
         ep = {
             "episode_id": episode_id,
             "task_id": task_id,
-            "task_difficulty": task["difficulty"],
-            "task_description": task["description"],
+            "task_difficulty": task_instance.difficulty,
+            "task_description": task_instance.task_description,
             "agent_name": agent_name,
             "step_count": 0,
-            "max_steps": task["max_steps"],
+            "max_steps": task_instance.max_steps,
             "fetched_data": {},
             "fetch_log": [],
             "tickers_queried": [],
@@ -142,18 +147,24 @@ class FinQueryEnvironment:
             "final_answer": None,
             "cumulative_reward": 0.0,
             "done": False,
+            # Task instance data for grading and rewards
+            "ground_truth": task_instance.ground_truth,
+            "required_fetches": task_instance.required_fetches,
+            "min_fetches": task_instance.min_fetches,
+            "expected_intermediates": task_instance.expected_intermediates,
+            "grader_id": task_instance.grader_id,
         }
         self._episodes[episode_id] = ep
-        save_episode(episode_id, task_id, task["difficulty"], agent_name)
+        save_episode(episode_id, task_id, task_instance.difficulty, agent_name)
 
         return {
             "episode_id": episode_id,
             "observation": {
-                "task_description": task["description"],
+                "task_description": task_instance.task_description,
                 "tool_result": None,
                 "tool_error": None,
                 "steps_taken": 0,
-                "steps_remaining": task["max_steps"],
+                "steps_remaining": task_instance.max_steps,
                 "tickers_queried": [],
                 "episode_status": "ongoing",
                 "feedback": None,
@@ -171,7 +182,6 @@ class FinQueryEnvironment:
 
         ep["step_count"] += 1
         action_type = action.get("action_type", "")
-        task = TASKS[ep["task_id"]]
 
         tool_result = None
         tool_error = None
@@ -239,8 +249,10 @@ class FinQueryEnvironment:
                 ep["final_answer"] = answer
                 ep["done"] = True
 
-                grader_result = task["grader"].grade(
+                grader = GRADERS[ep["grader_id"]]
+                grader_result = grader.grade(
                     answer,
+                    ground_truth=ep["ground_truth"],
                     step_count=ep["step_count"],
                     max_steps=ep["max_steps"],
                 )
@@ -251,15 +263,15 @@ class FinQueryEnvironment:
                     step_count=ep["step_count"],
                     max_steps=ep["max_steps"],
                     fetch_count=len(ep["fetch_log"]),
-                    min_fetches=task["min_fetches"],
+                    min_fetches=ep["min_fetches"],
                 )
 
                 step_reward, feedback = compute_step_reward(
                     action_type="submit_answer",
                     fetch_key=None,
                     fetch_log=ep["fetch_log"],
-                    required_fetches=task["required_fetches"],
-                    min_fetches=task["min_fetches"],
+                    required_fetches=ep["required_fetches"],
+                    min_fetches=ep["min_fetches"],
                 )
 
                 total_step = step_reward + terminal_reward
@@ -313,10 +325,10 @@ class FinQueryEnvironment:
             action_type=action_type,
             fetch_key=fetch_key,
             fetch_log=ep["fetch_log"][:-1] if fetch_key and fetch_key in ep["fetch_log"] else ep["fetch_log"],
-            required_fetches=task["required_fetches"],
-            min_fetches=task["min_fetches"],
+            required_fetches=ep["required_fetches"],
+            min_fetches=ep["min_fetches"],
             computed_result=computed_result,
-            expected_intermediates=task.get("expected_intermediates"),
+            expected_intermediates=ep.get("expected_intermediates"),
         )
 
         ep["cumulative_reward"] += step_reward
