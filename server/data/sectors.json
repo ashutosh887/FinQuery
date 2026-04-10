@@ -1,178 +1,457 @@
 {
-  "technology": {
-    "2019": {
-      "pe_ratio": 24.1,
-      "pb_ratio": 5.0,
-      "ev_ebitda": 16.5,
-      "roe": 0.18,
-      "debt_equity": 0.44
-    },
-    "2020": {
-      "pe_ratio": 25.3,
-      "pb_ratio": 5.1,
-      "ev_ebitda": 17.2,
-      "roe": 0.19,
-      "debt_equity": 0.45
-    },
-    "2021": {
-      "pe_ratio": 28.7,
-      "pb_ratio": 6.8,
-      "ev_ebitda": 20.5,
-      "roe": 0.22,
-      "debt_equity": 0.42
-    },
-    "2022": {
-      "pe_ratio": 21.4,
-      "pb_ratio": 4.9,
-      "ev_ebitda": 16.8,
-      "roe": 0.18,
-      "debt_equity": 0.50
-    },
-    "2023": {
-      "pe_ratio": 22.1,
-      "pb_ratio": 5.4,
-      "ev_ebitda": 18.3,
-      "roe": 0.21,
-      "debt_equity": 0.48
-    },
-    "2024": {
-      "pe_ratio": 23.8,
-      "pb_ratio": 5.9,
-      "ev_ebitda": 19.5,
-      "roe": 0.23,
-      "debt_equity": 0.46
-    }
-  },
   "automotive": {
+    "2017": {
+      "pe_ratio": 80.34,
+      "pb_ratio": 1.61,
+      "ev_ebitda": 71.44,
+      "roe": 0.04,
+      "debt_equity": 1.74
+    },
+    "2018": {
+      "pe_ratio": 76.23,
+      "pb_ratio": 6.11,
+      "ev_ebitda": 61.8,
+      "roe": 0.1,
+      "debt_equity": 1.28
+    },
     "2019": {
-      "pe_ratio": 14.8,
-      "pb_ratio": 1.7,
-      "ev_ebitda": 9.2,
-      "roe": 0.07,
-      "debt_equity": 1.25
+      "pe_ratio": 133.0,
+      "pb_ratio": 1.73,
+      "ev_ebitda": 70.35,
+      "roe": 0.04,
+      "debt_equity": 1.74
     },
     "2020": {
-      "pe_ratio": 15.2,
-      "pb_ratio": 1.8,
-      "ev_ebitda": 9.5,
-      "roe": 0.08,
-      "debt_equity": 1.20
+      "pe_ratio": 148.71,
+      "pb_ratio": 3.15,
+      "ev_ebitda": 59.49,
+      "roe": 0.05,
+      "debt_equity": 1.45
     },
     "2021": {
-      "pe_ratio": 12.4,
-      "pb_ratio": 2.1,
-      "ev_ebitda": 8.3,
-      "roe": 0.14,
-      "debt_equity": 1.05
+      "pe_ratio": 28.29,
+      "pb_ratio": 4.32,
+      "ev_ebitda": 37.23,
+      "roe": 0.19,
+      "debt_equity": 1.28
     },
     "2022": {
-      "pe_ratio": 11.8,
-      "pb_ratio": 1.6,
-      "ev_ebitda": 7.9,
-      "roe": 0.10,
-      "debt_equity": 1.15
+      "pe_ratio": 65.65,
+      "pb_ratio": 5.27,
+      "ev_ebitda": 56.25,
+      "roe": 0.13,
+      "debt_equity": 1.32
     },
     "2023": {
-      "pe_ratio": 10.5,
-      "pb_ratio": 1.9,
-      "ev_ebitda": 8.1,
-      "roe": 0.12,
-      "debt_equity": 1.10
+      "pe_ratio": 47.27,
+      "pb_ratio": 5.67,
+      "ev_ebitda": 55.43,
+      "roe": 0.11,
+      "debt_equity": 1.31
     },
     "2024": {
-      "pe_ratio": 11.2,
-      "pb_ratio": 2.0,
-      "ev_ebitda": 8.5,
-      "roe": 0.13,
-      "debt_equity": 1.08
+      "pe_ratio": 62.36,
+      "pb_ratio": 6.31,
+      "ev_ebitda": 64.75,
+      "roe": 0.1,
+      "debt_equity": 1.3
+    },
+    "2025": {
+      "pe_ratio": 84.29,
+      "pb_ratio": 6.96,
+      "ev_ebitda": 73.14,
+      "roe": 0.1,
+      "debt_equity": 1.28
     }
   },
   "banking": {
-    "2019": {
-      "pe_ratio": 11.5,
-      "pb_ratio": 1.3,
-      "ev_ebitda": 9.0,
+    "2017": {
+      "pe_ratio": 8.25,
+      "pb_ratio": 1.08,
+      "ev_ebitda": 15.2,
       "roe": 0.12,
-      "debt_equity": 2.45
+      "debt_equity": 2.81
+    },
+    "2018": {
+      "pe_ratio": 9.41,
+      "pb_ratio": 1.26,
+      "ev_ebitda": 13.16,
+      "roe": 0.12,
+      "debt_equity": 2.63
+    },
+    "2019": {
+      "pe_ratio": 10.7,
+      "pb_ratio": 1.19,
+      "ev_ebitda": 16.67,
+      "roe": 0.12,
+      "debt_equity": 2.81
     },
     "2020": {
-      "pe_ratio": 10.8,
-      "pb_ratio": 1.2,
-      "ev_ebitda": 8.5,
-      "roe": 0.10,
-      "debt_equity": 2.50
+      "pe_ratio": 12.87,
+      "pb_ratio": 1.06,
+      "ev_ebitda": 15.4,
+      "roe": 0.08,
+      "debt_equity": 2.77
     },
     "2021": {
-      "pe_ratio": 11.2,
-      "pb_ratio": 1.5,
-      "ev_ebitda": 9.2,
-      "roe": 0.14,
-      "debt_equity": 2.30
+      "pe_ratio": 9.86,
+      "pb_ratio": 1.06,
+      "ev_ebitda": 12.88,
+      "roe": 0.13,
+      "debt_equity": 2.69
     },
     "2022": {
-      "pe_ratio": 9.8,
-      "pb_ratio": 1.3,
-      "ev_ebitda": 7.8,
-      "roe": 0.12,
-      "debt_equity": 2.40
+      "pe_ratio": 11.3,
+      "pb_ratio": 1.2,
+      "ev_ebitda": 15.21,
+      "roe": 0.11,
+      "debt_equity": 2.69
     },
     "2023": {
-      "pe_ratio": 10.1,
-      "pb_ratio": 1.4,
-      "ev_ebitda": 8.0,
-      "roe": 0.15,
-      "debt_equity": 2.20
+      "pe_ratio": 9.56,
+      "pb_ratio": 1.1,
+      "ev_ebitda": 13.93,
+      "roe": 0.12,
+      "debt_equity": 2.65
     },
     "2024": {
-      "pe_ratio": 10.8,
-      "pb_ratio": 1.5,
-      "ev_ebitda": 8.4,
+      "pe_ratio": 11.66,
+      "pb_ratio": 1.3,
+      "ev_ebitda": 15.07,
+      "roe": 0.13,
+      "debt_equity": 2.67
+    },
+    "2025": {
+      "pe_ratio": 12.36,
+      "pb_ratio": 1.26,
+      "ev_ebitda": 16.33,
+      "roe": 0.12,
+      "debt_equity": 2.63
+    }
+  },
+  "energy": {
+    "2017": {
+      "pe_ratio": 106.93,
+      "pb_ratio": 1.61,
+      "ev_ebitda": 31.2,
+      "roe": 0.02,
+      "debt_equity": 0.34
+    },
+    "2018": {
+      "pe_ratio": 97.78,
+      "pb_ratio": 1.74,
+      "ev_ebitda": 32.26,
+      "roe": 0.02,
+      "debt_equity": 0.34
+    },
+    "2019": {
+      "pe_ratio": 103.98,
+      "pb_ratio": 1.81,
+      "ev_ebitda": 36.05,
+      "roe": 0.02,
+      "debt_equity": 0.34
+    },
+    "2020": {
+      "pe_ratio": 0.0,
+      "pb_ratio": 2.81,
+      "ev_ebitda": 0.0,
+      "roe": -0.13,
+      "debt_equity": 0.34
+    },
+    "2021": {
+      "pe_ratio": 96.53,
+      "pb_ratio": 1.39,
+      "ev_ebitda": 27.48,
+      "roe": 0.02,
+      "debt_equity": 0.34
+    },
+    "2022": {
+      "pe_ratio": 8.77,
+      "pb_ratio": 1.35,
+      "ev_ebitda": 8.29,
       "roe": 0.16,
-      "debt_equity": 2.15
+      "debt_equity": 0.34
+    },
+    "2023": {
+      "pe_ratio": 126.29,
+      "pb_ratio": 3.83,
+      "ev_ebitda": 50.89,
+      "roe": 0.06,
+      "debt_equity": 0.34
+    },
+    "2024": {
+      "pe_ratio": 213.44,
+      "pb_ratio": 4.03,
+      "ev_ebitda": 75.02,
+      "roe": 0.02,
+      "debt_equity": 0.34
+    },
+    "2025": {
+      "pe_ratio": 206.77,
+      "pb_ratio": 3.33,
+      "ev_ebitda": 62.39,
+      "roe": 0.02,
+      "debt_equity": 0.34
+    }
+  },
+  "healthcare": {
+    "2017": {
+      "pe_ratio": 26.31,
+      "pb_ratio": 6.72,
+      "ev_ebitda": 21.79,
+      "roe": 0.25,
+      "debt_equity": 0.56
+    },
+    "2018": {
+      "pe_ratio": 23.59,
+      "pb_ratio": 6.02,
+      "ev_ebitda": 21.77,
+      "roe": 0.24,
+      "debt_equity": 0.56
+    },
+    "2019": {
+      "pe_ratio": 26.72,
+      "pb_ratio": 6.52,
+      "ev_ebitda": 24.14,
+      "roe": 0.24,
+      "debt_equity": 0.56
+    },
+    "2020": {
+      "pe_ratio": 29.76,
+      "pb_ratio": 7.19,
+      "ev_ebitda": 27.85,
+      "roe": 0.24,
+      "debt_equity": 0.56
+    },
+    "2021": {
+      "pe_ratio": 19.04,
+      "pb_ratio": 4.87,
+      "ev_ebitda": 16.16,
+      "roe": 0.26,
+      "debt_equity": 0.56
+    },
+    "2022": {
+      "pe_ratio": 18.53,
+      "pb_ratio": 5.33,
+      "ev_ebitda": 15.82,
+      "roe": 0.24,
+      "debt_equity": 0.56
+    },
+    "2023": {
+      "pe_ratio": 52.44,
+      "pb_ratio": 11.56,
+      "ev_ebitda": 41.3,
+      "roe": 0.22,
+      "debt_equity": 0.56
+    },
+    "2024": {
+      "pe_ratio": 56.55,
+      "pb_ratio": 11.73,
+      "ev_ebitda": 41.54,
+      "roe": 0.21,
+      "debt_equity": 0.56
+    },
+    "2025": {
+      "pe_ratio": 45.47,
+      "pb_ratio": 9.78,
+      "ev_ebitda": 38.95,
+      "roe": 0.22,
+      "debt_equity": 0.56
+    }
+  },
+  "industrials": {
+    "2017": {
+      "pe_ratio": 90.48,
+      "pb_ratio": 11.86,
+      "ev_ebitda": 47.89,
+      "roe": 0.19,
+      "debt_equity": 6.12
+    },
+    "2018": {
+      "pe_ratio": 101.31,
+      "pb_ratio": 10.46,
+      "ev_ebitda": 49.07,
+      "roe": 0.17,
+      "debt_equity": 6.13
+    },
+    "2019": {
+      "pe_ratio": 32.88,
+      "pb_ratio": 11.44,
+      "ev_ebitda": 26.79,
+      "roe": -0.28,
+      "debt_equity": 6.12
+    },
+    "2020": {
+      "pe_ratio": 40.45,
+      "pb_ratio": 13.9,
+      "ev_ebitda": 32.42,
+      "roe": -0.82,
+      "debt_equity": 6.13
+    },
+    "2021": {
+      "pe_ratio": 37.33,
+      "pb_ratio": 11.0,
+      "ev_ebitda": 30.45,
+      "roe": -0.28,
+      "debt_equity": 6.12
+    },
+    "2022": {
+      "pe_ratio": 45.21,
+      "pb_ratio": 9.19,
+      "ev_ebitda": 35.39,
+      "roe": -0.05,
+      "debt_equity": 6.12
+    },
+    "2023": {
+      "pe_ratio": 39.55,
+      "pb_ratio": 10.54,
+      "ev_ebitda": 37.49,
+      "roe": 0.26,
+      "debt_equity": 6.12
+    },
+    "2024": {
+      "pe_ratio": 59.29,
+      "pb_ratio": 9.31,
+      "ev_ebitda": 47.69,
+      "roe": 0.18,
+      "debt_equity": 6.13
+    },
+    "2025": {
+      "pe_ratio": 65.47,
+      "pb_ratio": 11.75,
+      "ev_ebitda": 49.05,
+      "roe": 0.2,
+      "debt_equity": 6.13
     }
   },
   "retail": {
+    "2017": {
+      "pe_ratio": 24.2,
+      "pb_ratio": 4.07,
+      "ev_ebitda": 18.26,
+      "roe": 0.18,
+      "debt_equity": 0.69
+    },
+    "2018": {
+      "pe_ratio": 46.56,
+      "pb_ratio": 8.05,
+      "ev_ebitda": 14.58,
+      "roe": 0.21,
+      "debt_equity": 0.56
+    },
     "2019": {
-      "pe_ratio": 22.5,
-      "pb_ratio": 7.2,
-      "ev_ebitda": 14.8,
-      "roe": 0.16,
-      "debt_equity": 0.72
+      "pe_ratio": 19.85,
+      "pb_ratio": 3.5,
+      "ev_ebitda": 15.75,
+      "roe": 0.19,
+      "debt_equity": 0.69
     },
     "2020": {
-      "pe_ratio": 35.1,
-      "pb_ratio": 10.5,
-      "ev_ebitda": 22.4,
-      "roe": 0.14,
-      "debt_equity": 0.78
+      "pe_ratio": 60.8,
+      "pb_ratio": 13.7,
+      "ev_ebitda": 50.72,
+      "roe": 0.23,
+      "debt_equity": 0.73
     },
     "2021": {
-      "pe_ratio": 42.8,
-      "pb_ratio": 12.3,
-      "ev_ebitda": 25.1,
-      "roe": 0.12,
-      "debt_equity": 0.82
+      "pe_ratio": 52.1,
+      "pb_ratio": 12.35,
+      "ev_ebitda": 49.9,
+      "roe": 0.22,
+      "debt_equity": 0.68
     },
     "2022": {
-      "pe_ratio": 28.4,
-      "pb_ratio": 8.1,
-      "ev_ebitda": 17.2,
-      "roe": 0.09,
-      "debt_equity": 0.85
+      "pe_ratio": 57.8,
+      "pb_ratio": 8.98,
+      "ev_ebitda": 54.71,
+      "roe": 0.13,
+      "debt_equity": 0.63
     },
     "2023": {
-      "pe_ratio": 30.2,
-      "pb_ratio": 9.0,
-      "ev_ebitda": 18.6,
-      "roe": 0.11,
-      "debt_equity": 0.80
+      "pe_ratio": 40.87,
+      "pb_ratio": 6.87,
+      "ev_ebitda": 34.87,
+      "roe": 0.17,
+      "debt_equity": 0.59
     },
     "2024": {
-      "pe_ratio": 32.5,
-      "pb_ratio": 9.8,
-      "ev_ebitda": 19.8,
-      "roe": 0.13,
-      "debt_equity": 0.78
+      "pe_ratio": 43.65,
+      "pb_ratio": 8.55,
+      "ev_ebitda": 30.42,
+      "roe": 0.21,
+      "debt_equity": 0.57
+    },
+    "2025": {
+      "pe_ratio": 48.01,
+      "pb_ratio": 10.3,
+      "ev_ebitda": 25.39,
+      "roe": 0.21,
+      "debt_equity": 0.56
+    }
+  },
+  "technology": {
+    "2017": {
+      "pe_ratio": 18.89,
+      "pb_ratio": 7.29,
+      "ev_ebitda": 16.25,
+      "roe": 0.26,
+      "debt_equity": 0.33
+    },
+    "2018": {
+      "pe_ratio": 22.61,
+      "pb_ratio": 10.81,
+      "ev_ebitda": 37.41,
+      "roe": 0.37,
+      "debt_equity": 0.27
+    },
+    "2019": {
+      "pe_ratio": 25.76,
+      "pb_ratio": 10.41,
+      "ev_ebitda": 20.54,
+      "roe": 0.26,
+      "debt_equity": 0.33
+    },
+    "2020": {
+      "pe_ratio": 29.26,
+      "pb_ratio": 14.89,
+      "ev_ebitda": 25.74,
+      "roe": 0.28,
+      "debt_equity": 0.49
+    },
+    "2021": {
+      "pe_ratio": 28.46,
+      "pb_ratio": 18.91,
+      "ev_ebitda": 23.98,
+      "roe": 0.43,
+      "debt_equity": 0.48
+    },
+    "2022": {
+      "pe_ratio": 28.66,
+      "pb_ratio": 20.04,
+      "ev_ebitda": 25.14,
+      "roe": 0.23,
+      "debt_equity": 0.37
+    },
+    "2023": {
+      "pe_ratio": 26.33,
+      "pb_ratio": 17.21,
+      "ev_ebitda": 23.04,
+      "roe": 0.35,
+      "debt_equity": 0.29
+    },
+    "2024": {
+      "pe_ratio": 30.25,
+      "pb_ratio": 21.44,
+      "ev_ebitda": 25.42,
+      "roe": 0.37,
+      "debt_equity": 0.28
+    },
+    "2025": {
+      "pe_ratio": 36.25,
+      "pb_ratio": 21.66,
+      "ev_ebitda": 49.07,
+      "roe": 0.37,
+      "debt_equity": 0.27
     }
   },
   "_ticker_sectors": {
@@ -181,12 +460,25 @@
     "GOOGL": "technology",
     "META": "technology",
     "NVDA": "technology",
+    "ORCL": "technology",
+    "CRM": "technology",
     "TSLA": "automotive",
     "F": "automotive",
     "GM": "automotive",
+    "TM": "automotive",
     "JPM": "banking",
     "BAC": "banking",
+    "WFC": "banking",
+    "GS": "banking",
     "AMZN": "retail",
-    "WMT": "retail"
+    "WMT": "retail",
+    "COST": "retail",
+    "JNJ": "healthcare",
+    "UNH": "healthcare",
+    "PFE": "healthcare",
+    "XOM": "energy",
+    "CVX": "energy",
+    "CAT": "industrials",
+    "BA": "industrials"
   }
 }
