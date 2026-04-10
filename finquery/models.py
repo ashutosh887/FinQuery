@@ -1,8 +1,4 @@
-"""Pydantic models defining the FinQuery API contract.
-
-This is the single source of truth for action, observation, and state types.
-If you change a field here, update client.py, openenv.yaml, and README.md.
-"""
+"""Pydantic models — single source of truth for the FinQuery API contract."""
 
 from typing import Any, Dict, List, Literal, Optional
 
@@ -38,6 +34,7 @@ class FinQueryObservation(BaseModel):
     tickers_queried: List[str]
     episode_status: Literal["ongoing", "answered", "failed_max_steps"]
     feedback: Optional[str] = None
+    task_metadata: Optional[Dict[str, Any]] = None
 
 
 class FinQueryState(BaseModel):
@@ -60,6 +57,10 @@ class StepResponse(BaseModel):
 class ResetRequest(BaseModel):
     task_id: Optional[str] = None
     agent_name: Optional[str] = "anonymous"
+    seed: Optional[int] = None
+    size: Optional[int] = None
+    config: Optional[Dict[str, Any]] = None
+    task_specs: Optional[List[Dict[str, Any]]] = None
 
 
 class StepRequest(BaseModel):
@@ -70,7 +71,7 @@ class StepRequest(BaseModel):
 class TaskInfo(BaseModel):
     id: str
     name: str
-    difficulty: Literal["easy", "medium", "hard"]
+    difficulty: Literal["easy", "medium", "hard", "mixed"]
     description: str
     max_steps: int
     action_schema: Dict[str, Any]
