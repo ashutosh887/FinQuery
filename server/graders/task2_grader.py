@@ -1,11 +1,6 @@
-"""Task 2 (Medium) -- Multi-Company Ratio Comparison grader.
+"""Task 2 (Medium) — Multi-Company Ratio Comparison grader.
 
-Question: Among MSFT, GOOGL, META -- which had the most favorable EV/EBITDA
-relative to the tech sector median in 2023? By how many points did it differ?
-
-Ground truth: META with EV/EBITDA of 12.83, delta of -5.47 from sector median 18.3
-
-Scoring: company=0.40, delta=0.40, efficiency=0.20
+Scoring: company=0.40, delta=0.40, efficiency=0.20.
 """
 
 GROUND_TRUTH = {

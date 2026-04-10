@@ -1,15 +1,19 @@
 """Task 3 (Hard) — Multi-Year Anomaly Detection grader.
 
-Question: Among TSLA, F, GM — which had negative FCF in >= 2 of 4 years (2020-2023)
-AND P/E > 30 in any of those years? State which years for each.
-
-Ground truth: Only TSLA qualifies.
-  - Negative FCF years: 2020, 2021
-  - P/E > 30 years: 2020, 2021, 2022, 2023
+Supports multiple anomaly patterns via configurable condition keys.
+Scoring: companies=0.30, condition_a=0.30, condition_b=0.30, efficiency=0.10.
 """
 
 GROUND_TRUTH = {
     "qualifying_companies": ["TSLA"],
+    "condition_a_key": "negative_fcf_years",
+    "condition_b_key": "pe_above_30_years",
+    "condition_a_years": {
+        "TSLA": [2020, 2021],
+    },
+    "condition_b_years": {
+        "TSLA": [2020, 2021, 2022, 2023],
+    },
     "fcf_negative_years": {
         "TSLA": [2020, 2021],
     },
@@ -64,16 +68,19 @@ def grade(answer, ground_truth=None, **kwargs):
     score += company_score
 
     details = answer.get("details", {})
-    # Normalize keys to uppercase
     details = {k.upper(): v for k, v in details.items()} if isinstance(details, dict) else {}
-    fcf_score = _score_years(details, gt["fcf_negative_years"], "negative_fcf_years")
-    breakdown["correct_fcf_years"] = round(fcf_score * 0.30, 4)
-    score += fcf_score * 0.30
 
-    pe_score = _score_years(details, gt["pe_above_30_years"], "pe_above_30_years")
-    breakdown["correct_pe_years"] = round(pe_score * 0.30, 4)
-    score += pe_score * 0.30
+    cond_a_key = gt.get("condition_a_key", "negative_fcf_years")
+    cond_b_key = gt.get("condition_b_key", "pe_above_30_years")
+    cond_a_data = gt.get("condition_a_years", gt.get("fcf_negative_years", {}))
+    cond_b_data = gt.get("condition_b_years", gt.get("pe_above_30_years", {}))
 
-    # Efficiency bonus (0.10) handled by reward engine, not grader.
+    a_score = _score_years(details, cond_a_data, cond_a_key)
+    breakdown[f"correct_{cond_a_key}"] = round(a_score * 0.30, 4)
+    score += a_score * 0.30
+
+    b_score = _score_years(details, cond_b_data, cond_b_key)
+    breakdown[f"correct_{cond_b_key}"] = round(b_score * 0.30, 4)
+    score += b_score * 0.30
 
     return {"score": max(0.01, min(0.99, round(score, 4))), "breakdown": breakdown}

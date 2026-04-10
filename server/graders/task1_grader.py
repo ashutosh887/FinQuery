@@ -1,7 +1,7 @@
 """Task 1 (Easy) — Single-Metric Computation grader.
 
-Question: What was Apple's net profit margin for fiscal year 2022?
-Ground truth: 25.31% (net_income 99803 / revenue 394328 * 100)
+Compares numeric answer to ground truth with error tolerance.
+Default ground truth: 25.31 (Apple net profit margin FY2022).
 """
 
 GROUND_TRUTH = {
