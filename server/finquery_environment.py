@@ -118,6 +118,29 @@ class FinQueryEnvironment:
         self._current_batch: list = []
         self._batch_index: int = 0
 
+        # Build tool reference once at startup for generic agent compatibility
+        tickers = sorted(self.data.keys())
+        years = sorted({y for t in self.data for y in self.data[t]})
+        self._tool_reference = (
+            "\n\nAvailable tools:\n"
+            "- get_income_statement(ticker, year): Returns revenue, cogs, gross_profit, operating_income, net_income, eps\n"
+            "- get_balance_sheet(ticker, year): Returns total_assets, total_liabilities, total_equity, cash, total_debt\n"
+            "- get_cash_flow(ticker, year): Returns operating_cf, investing_cf, financing_cf, fcf, capex\n"
+            "- get_price_history(ticker, years): Returns open, close, high, low, avg_price for each year\n"
+            "- get_ratios(ticker, year): Returns pe_ratio, pb_ratio, ev_ebitda, roe, roa, debt_equity, current_ratio, gross_margin, net_margin, fcf_margin\n"
+            "- compare_to_sector(ticker, metric, year): Returns company value vs sector median\n"
+            "- compute(expression): Evaluates arithmetic expression, returns float\n"
+            "- submit_answer(answer, reasoning): Submit your final answer\n"
+            "\n"
+            'Send actions as JSON: {"action_type": "<tool_name>", "ticker": "<TICKER>", "year": <YEAR>}\n'
+            'For price_history use: {"action_type": "get_price_history", "ticker": "<TICKER>", "years": [<YEAR1>, <YEAR2>]}\n'
+            'For compute use: {"action_type": "compute", "expression": "<math_expression>"}\n'
+            'Submit with: {"action_type": "submit_answer", "answer": <value>, "reasoning": "<explanation>"}\n'
+            "\n"
+            f"Available tickers: {', '.join(tickers)}\n"
+            f"Available years: {years[0]}-{years[-1]}"
+        )
+
     def reset(
         self,
         task_id: str | None = None,
@@ -172,11 +195,12 @@ class FinQueryEnvironment:
 
     def _create_episode(self, task_instance, agent_name: str) -> dict:
         episode_id = str(uuid.uuid4())
+        full_description = f"Task: {task_instance.task_description}{self._tool_reference}"
         ep = {
             "episode_id": episode_id,
             "task_id": task_instance.task_id,
             "task_difficulty": task_instance.difficulty,
-            "task_description": task_instance.task_description,
+            "task_description": full_description,
             "agent_name": agent_name,
             "step_count": 0,
             "max_steps": task_instance.max_steps,
@@ -200,7 +224,7 @@ class FinQueryEnvironment:
         return {
             "episode_id": episode_id,
             "observation": {
-                "task_description": task_instance.task_description,
+                "task_description": full_description,
                 "tool_result": None,
                 "tool_error": None,
                 "steps_taken": 0,
