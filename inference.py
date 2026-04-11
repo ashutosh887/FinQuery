@@ -186,7 +186,6 @@ def main() -> None:
 
     for task_id in TASK_IDS:
         run_episode(task_id=task_id, client=client)
-        print("", flush=True)  # blank line between tasks
 
 
 if __name__ == "__main__":
